@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,9 +9,32 @@
     <link rel="stylesheet" href="./css/style.css">
     <title>BuzzQuizz</title>
 </head>
+
 <body>
-    
+    <header>
+        <img src="./img/BuzzQuizz.png">
+    </header>
+    <main class="pagina-inicial">
+        <section class="usuario">
+            <div class="titulo-quizzes-usuario hide">
+                <h1>Seus Quizzes</h1>
+                <ion-icon name="add-circle" onclick="criarQuizz()"></ion-icon>
+            </div>
+            <ul class="quizzes-usuario">
+            </ul>
+        </section>
+        <section class="todos">
+            <div class="titulo-quizzes-todos">
+                <h1>Todos os Quizzes</h1>
+            </div>
+            <ul class="quizzes-todos">
+            </ul>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/index.js"></script>
 </body>
+
 </html>
