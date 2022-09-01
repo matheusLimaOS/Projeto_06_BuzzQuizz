@@ -1,70 +1,76 @@
-function telaInfoBasicaQuiz(){
-    let body = document.querySelector('body');
-    let container = document.createElement('div');
-    criaHeader(body);
-    container.classList.add('containerCriaQuiz')
-    container.innerHTML += '<h1> Comece pelo começo</h1>';
-    container.innerHTML += `
-        <form>
-            <input placeholder = "Título do seu quizz"/>
-            <input placeholder = "URL da imagem do seu quizz"/>
-            <input placeholder = "Quantidade de perguntas do quizz"/>
-            <input placeholder = "Quantidade de níveis do quizz"/>
-        </form>
-        <button onClick="onSubmit()"> Prosseguir pra criar perguntas </button>
-    `;
-    body.appendChild(container);
+let quizzes = [];
+let quizzesUsuario = '';
+let urlAPI = 'https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes';
+
+function getQuizzesUsuario() {
+
 }
 
-function mensagemErro(irmão,texto){
-    let divMsg = document.createElement('div');
-
-    divMsg.innerHTML = texto;
-    divMsg.classList.add('erro');
-
-    irmão.after(divMsg);
-    setTimeout(()=>{
-        let erro = document.querySelector('.containerCriaQuiz form .erro');
-        if(erro!== undefined && erro !== null){
-            erro.remove();
+function renderizarQuizzesUsuario() {
+    let quizzesUsuarioSerializados = JSON.stringify(quizzesUsuario);
+    let listaQuizzesUsuario = document.querySelector('.quizzes-usuario');
+    if (quizzesUsuario === '') {
+        listaQuizzesUsuario.innerHTML = `
+            <div class="quizz-usuario-vazio">
+                <h1>Você não criou nenhum quizz ainda :(</h1>
+                <button onclick="criarQuizz()">Criar Quizz</button> 
+            </div>
+            ` /* adicionar onclick criar quizz e definir filtro(quizz-usuário)*/
+    } else {
+        const tituloUsuario = document.querySelector('.titulo-quizzes-usuario');
+        tituloUsuario.classList.remove('hide');
+        listaQuizzesUsuario.innerHTML += ``; /* adicionar onclick criar quizz*/
+        for (let i = 0; i < quizzesUsuario.length; i++) {
+            listaQuizzesUsuario.innerHTML += `
+            <li class="quizz">
+                <div class="degrade">
+                    <img src="${quizzesUsuarioSerializados[i].image}" onclick="quizzSelecionado()" onerror="this. style. display = 'none'">
+                </div>
+                <div class="titulo-quizz">
+                <h2 onclick="quizzSelecionado()">${quizzesUsuarioSerializados[i].title}</h2>
+                </div>
+            </li> 
+            `
         }
-    },3000)
+    }
 }
 
-function onSubmit() {
-    let button = document.querySelector(".containerCriaQuiz button");
-    let titulo = document.querySelector(".containerCriaQuiz form input:nth-child(1)");
-    let URLQuizz = document.querySelector(".containerCriaQuiz form input:nth-child(2)");
-    let quantPerg = document.querySelector(".containerCriaQuiz form input:nth-child(3)");
-    let quantNiveis = document.querySelector(".containerCriaQuiz form input:nth-child(4)");
-    let checaURL = (URLQuizz.value.includes("https://") || URLQuizz.value.includes("http://")) && URLQuizz.value.includes(".");
+renderizarQuizzesUsuario();
 
-    button.setAttribute('disabled','true');
-    if(titulo.value.length===0 || titulo.value.length<20 || titulo.value.length>65){
-        mensagemErro(titulo,'É necessário que o titulo tenha entre 20 e 65 caracteres');
-    }
-    if(URLQuizz.value.length===0 && checaURL){
-        mensagemErro(URLQuizz,'É necessário informar uma URL de imagem válida!');
-    }
-
-    if(quantPerg.value.length===0 || isNaN(quantPerg.value) || quantPerg.value < 3){
-        quantPerg.value = "";
-        mensagemErro(quantPerg,'É necessário que a quantidade de perguntas sejá valida e maior que 3!');
-    }
-
-    if(quantNiveis.value.length===0 || isNaN(quantNiveis.value)){
-        quantNiveis.value = "";
-        mensagemErro(quantNiveis,'É necessário informar uma quantidade válida de niveis!');
-    }
-
-    setTimeout(() => {
-        button.removeAttribute('disabled');
-    }, 3000);
+function getQuizzes() {
+    const promise = axios.get(`${urlAPI}`);
+    promise.then(renderizarQuizzes);
 }
 
-function criaHeader(body){
-    let header = document.createElement('div');
-    header.classList.add('navbar');
-    header.innerHTML = `<p>BuzzQuizz</p>`
-    body.appendChild(header);
+getQuizzes();
+
+function renderizarQuizzes(resposta) {
+    quizzes = resposta.data;
+    console.log(quizzes);
+
+    let listaQuizzes = document.querySelector('.quizzes-todos');
+    listaQuizzes.innerHTML = ``;
+
+    for (let i = 0; i < quizzes.length; i++) {
+        listaQuizzes.innerHTML += `
+        <li class="quizz" id="${quizzes[i].id}">
+            <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
+            </div>
+            <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+            <div class="titulo-quizz">
+            <h2 onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</h2>
+            </div>
+        </li> 
+        `
+    }
+}
+
+function criarQuizz() {
+    const paginaInicial = document.querySelector('.pagina-inicial');
+    paginaInicial.classList.add('hide');
+}
+
+function quizzSelecionado(idSelecionado) {
+    const paginaInicial = document.querySelector('.pagina-inicial');
+    paginaInicial.classList.add('hide');
 }
