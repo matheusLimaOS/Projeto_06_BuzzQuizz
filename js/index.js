@@ -13,7 +13,7 @@ function paginaPrincipal(body) {
     main.classList.add('pagina-inicial');
     body.appendChild(main);
     const header = document.createElement('header');
-    header.innerHTML = `<p>BuzzQuizz</p>`
+    header.innerHTML = `<img src="./img/BuzzQuizz.png">`
     main.appendChild(header);
     const sectionUsuario = document.createElement('section');
     sectionUsuario.classList.add('usuario');
@@ -135,14 +135,14 @@ function renderizarPaginaQuizz(resposta) {
     `
     main.appendChild(banner);
     const perguntas = document.createElement('div');
-    perguntas.classList.add('perguntas');
+    perguntas.classList.add('perguntas-pagina-quizz');
     main.appendChild(perguntas);
 
     renderizarQuizz();
 }
 
 function renderizarQuizz() {
-    let perguntas = document.querySelector('.perguntas');
+    let perguntas = document.querySelector('.perguntas-pagina-quizz');
     perguntas.innerHTML = ``;
     for (let i = 0; i < quizz.questions.length; i++) {
         let respostas = quizz.questions[i].answers;
@@ -159,7 +159,7 @@ function renderizarQuizz() {
                 </div>`
         }
         perguntas.innerHTML += `
-            <div class="pergunta">
+            <div class="pergunta-pagina-quizz">
                 <div class="titulo-pergunta">
                    <p>${quizz.questions[i].title}</p>
                  </div>` + respostasMisturadas + 
