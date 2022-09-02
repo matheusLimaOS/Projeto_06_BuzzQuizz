@@ -32,7 +32,7 @@
     align-items: center;
 }
 
-.containerCriaQuiz form{
+.containerCriaQuiz > form{
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
     background-color: #FFFFFF;
     width: 600px;
@@ -65,7 +65,7 @@
     color: #BABABA;
 }
 
-.containerCriaQuiz button{
+.submit{
     border: 0;
     font-size: 21px;
     font-weight: 400;
@@ -91,18 +91,108 @@
     margin-bottom: 20px;
 }
 
-@media (min-width: 1100px) {
+/*Tela criar perguntas*/
+
+body{
+    background-color: #FAFAFA;
+}
+.formulario{
+    display: flex;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+    background-color: #FFFFFF;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+.pergunta .titulo{
+    display: flex;
+    align-items: center;
+    height: 75px;
+    justify-content: space-between;
+}
+.pergunta{
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 600px;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.pergunta .titulo p{
+    margin-left: 15px;
+    font-weight: 700;
+    font-size: 20px;
+}
+.pergunta .titulo > ion-icon{
+    width: 26px;
+    height: 23px;
+    margin-right: 15px;
+}
+.mostrando{
+    height: 825px;
+}
+.pergunta input:nth-child(2){
+    margin-bottom: 0;
+}
+.pergunta input:nth-child(4){
+    margin-bottom: 0;
+}
+.displayNone{
+    display: none;
+}
+.titulo{
+    width: 100%;
+}
+.titulo button{
+    border: 0;
+    background-color: inherit;
+    width: 25px;
+    height: 25px;
+    margin-right: 15px;
+}
+.titulo button ion-icon{
+    width: 25px;
+    height: 25px;
+}
+
+.respostaCorreta{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.respostaErrada{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+@media (max-width: 1100px) {
    /* ------------------------------Info basica quiz------------------------------ */
-       .containerCriaQuiz form{
-           width: 100vw;
-       }
-       .containerCriaQuiz h1{
-           margin: 30px 0;
-       }
-       .containerCriaQuiz button{
-          font-size: 18px;
-           width: 95%;
-           margin-top: 50px;
-       }
-   }
+    .containerCriaQuiz form{
+       width: 100vw;
+    }
+    .containerCriaQuiz h1{
+       margin: 30px 0;
+    }
+    .submit{
+      font-size: 18px;
+       width: 95%;
+       margin-top: 50px;
+    }
+
+    /*cria perguntas*/
+    .pergunta{
+        width: 100%;
+    }
+
+}
    

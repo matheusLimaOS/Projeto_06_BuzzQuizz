@@ -51,7 +51,7 @@ function renderizarQuizzesUsuario() {
         listaQuizzesUsuario.innerHTML = `
             <div class="quizz-usuario-vazio">
                 <h1>Você não criou nenhum quizz ainda :(</h1>
-                <button onclick="criarQuizz()">Criar Quizz</button> 
+                <button onclick="telaInfoBasicaQuiz()">Criar Quizz</button> 
             </div>
             `
     } else {
