@@ -2,6 +2,9 @@ let quizzes = [];
 let quizzesUsuario = '';
 let quizz = [];
 let urlAPI = 'https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes';
+let respostasCertas = 0;
+let respostasErradas = 0;
+let quantidadePerguntas = 0;
 
 function getQuizzesUsuario() {
 
@@ -56,7 +59,6 @@ function renderizarQuizzesUsuario() {
             `
     } else {
         const tituloUsuario = document.querySelector('.titulo-quizzes-usuario');
-        console.log(tituloUsuario)
         tituloUsuario.classList.remove('hide');
         listaQuizzesUsuario.innerHTML += ``;
         for (let i = 0; i < quizzesUsuario.length; i++) {
@@ -122,7 +124,7 @@ function renderizarPaginaQuizz(resposta) {
     main.classList.remove('pagina-inicial');
     main.classList.add('pagina-quizz');
     const header = document.createElement('header');
-    header.innerHTML = `<p>BuzzQuizz</p>`
+    header.innerHTML = `<img src="./img/BuzzQuizz.png">`
     main.appendChild(header);
     const banner = document.createElement('div');
     banner.classList.add('banner');
@@ -143,30 +145,65 @@ function renderizarPaginaQuizz(resposta) {
 
 function renderizarQuizz() {
     let perguntas = document.querySelector('.perguntas-pagina-quizz');
+    quantidadePerguntas = quizz.questions.length;
     perguntas.innerHTML = ``;
     for (let i = 0; i < quizz.questions.length; i++) {
         let respostas = quizz.questions[i].answers;
-        console.log(respostas);
         respostas = respostas.sort(comparador);
-    
+
         let respostasMisturadas = ``;
 
-        for (let i = 0; i < respostas.length; i++) {
-            respostasMisturadas += `
-                <div class="resposta">
-                    <img src="${respostas[i].image}" onerror="this. style. display = 'none'">
-                    <p>${respostas[i].text}</p>
+        for (let u = 0; u < respostas.length; u++) {
+            if (respostas[u].isCorrectAnswer === true) {
+                respostasMisturadas += `
+                <div class="resposta ocultar" onclick="verificarResposta(this, ${respostas[u].isCorrectAnswer})">
+                    <img src="${respostas[u].image}" onerror="this. style. display = 'none'">
+                    <p class="certa">${respostas[u].text}</p>
                 </div>`
+            } else {
+                respostasMisturadas += `
+                <div class="resposta ocultar" onclick="verificarResposta(this, ${respostas[u].isCorrectAnswer}, ${i})">
+                    <img src="${respostas[u].image}" onerror="this. style. display = 'none'">
+                    <p class="errada">${respostas[u].text}</p>
+                </div>`
+            }
         }
         perguntas.innerHTML += `
             <div class="pergunta-pagina-quizz">
-                <div class="titulo-pergunta">
+                <div class="titulo-pergunta" style = "background-color: ${quizz.questions[i].color}">
                    <p>${quizz.questions[i].title}</p>
-                 </div>` + respostasMisturadas + 
-            `</div>`
+                 </div>` + respostasMisturadas +
+            `</div>`;
     }
 }
 
 function comparador() {
     return Math.random() - 0.5;
+}
+
+function verificarResposta(elemento, valor) {
+    const perguntaRespondida = elemento.parentNode;
+    const perguntaComResposta = perguntaRespondida.querySelector('.selecionado');
+    const respostas = perguntaRespondida.querySelectorAll('.resposta');
+
+    if (perguntaComResposta === null) {
+        elemento.classList.add('selecionado');
+        for (let i = 0; i < respostas.length; i++) {
+            respostas[i].classList.remove('ocultar');
+            const verifica = respostas[i].classList.contains('selecionado');
+
+            if (verifica !== true) {
+                respostas[i].classList.add('naoSelecionada');
+            }
+        }
+
+        const proximaPergunta = perguntaRespondida.nextElementSibling;
+        setTimeout(function () { proximaPergunta.scrollIntoView() }, 2000); /* linkar última pergunta com o resultado do quizz */
+
+        if (valor === true) {
+            respostasCertas++;
+        } else {
+            respostasErradas++
+        }
+    }
 }
