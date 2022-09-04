@@ -4,8 +4,15 @@
     box-sizing: border-box;
 }
 
+* p {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
+    background-color: #fafafa;
 }
 
 /* ------------------------------Início página inicial------------------------------ */
@@ -223,6 +230,7 @@ header {
     grid-template-columns: auto auto;
     grid-column-gap: 12px;
     grid-row-gap: 12px;
+    background-color: #ffffff;
 }
 
 .titulo-pergunta {
@@ -250,7 +258,7 @@ header {
     height: 113px;
 }
 
-.naoSelecionada {
+.naoSelecionado {
     opacity: 0.3;
 }
 
@@ -260,9 +268,6 @@ header {
     margin-top: 5px;
     font-size: 13px;
     font-weight: 700;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    hyphens: auto;
 }
 
 .certa {
@@ -275,6 +280,81 @@ header {
 
 .ocultar p {
     color: unset;
+}
+
+.resumo-pagina-quizz {
+    width: 340px;
+    margin: 0 auto;
+    margin-top: 17px;
+}
+
+.titulo-nivel-final {
+    width: 340px;
+    height: 99px;
+    background-color: #ec362d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.titulo-nivel-final p {
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+}
+
+.info-nivel-final {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-nivel-final img {
+    width: 100%;
+    margin-bottom: 19px;
+}
+
+.info-nivel-final p {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.navegacao-pagina-quizz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 34px;
+    margin-bottom: 66px;
+}
+
+.reiniciar-quizz {
+    width: 221px;
+    height: 44px;
+    background-color: #ec362d;
+    font-size: 18px;
+    font-weight: 400;
+    color: #ffffff;
+    text-align: center;
+    border: none;
+    border-radius: 15px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.voltar-home {
+    width: 221px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.voltar-home p {
+    font-size: 18px;
+    font-weight: 400;
+    color: #818181;
+    text-align: center;
+    cursor: pointer;
 }
 
 /* ------------------------------Final página quizz------------------------------ */
@@ -363,7 +443,7 @@ header {
 
     /* ------------------------------Final página inicial------------------------------ */
 
-    /* ------------------------------Início página inicial------------------------------ */
+    /* ------------------------------Início página quizz------------------------------ */
     .perguntas-pagina-quizz {
         width: 759px;
         margin: 0 auto;
@@ -400,6 +480,71 @@ header {
         height: 34px;
         margin-top: 8px;
         font-size: 20px;
+    }
+
+    .resumo-pagina-quizz {
+        width: 759px;
+        margin: 0 auto;
+        margin-top: 17px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .titulo-nivel-final {
+        width: 727px;
+        background-color: #ec362d;
+        display: flex;
+        align-items: center;
+    }
+    
+    .titulo-nivel-final p {
+        width: 727px;
+        font-size: 23px;
+        font-weight: 700;
+        color: #ffffff;
+        text-align: center;
+    }
+    
+    .info-nivel-final {
+        width: 727px;
+        margin-top: 18px;
+        display: flex;
+        flex-direction: row;
+    }
+    
+    .info-nivel-final img {
+        width: 364px;
+        margin-right: 21px;
+    }
+    
+    .info-nivel-final p {
+        width: 342px;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .navegacao-pagina-quizz {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 57px;
+        margin-bottom: 85px;
+    }
+    
+    .reiniciar-quizz {
+        width: 262px;
+        height: 52px;
+        font-size: 21px;
+        margin-bottom: 16px;
+    }
+    
+    .voltar-home {
+        width: 262px;
+        height: 52px;
+    }
+    .voltar-home p {
+        font-size: 21px;
     }
 
     /* ------------------------------Final página quizz------------------------------ */

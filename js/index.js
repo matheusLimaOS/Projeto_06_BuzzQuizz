@@ -4,6 +4,7 @@ let quizz = [];
 let urlAPI = 'https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes';
 let respostasCertas = 0;
 let respostasErradas = 0;
+let somaRespostas = 0;
 let quantidadePerguntas = 0;
 
 function getQuizzesUsuario() {
@@ -20,11 +21,12 @@ function paginaPrincipal(body) {
     main.appendChild(header);
     const sectionUsuario = document.createElement('section');
     sectionUsuario.classList.add('usuario');
+    sectionUsuario.setAttribute('data-identifier', "user-quizzes")
     const divTituloUsuario = document.createElement('div');
     divTituloUsuario.classList.add('titulo-quizzes-usuario', 'hide');
     divTituloUsuario.innerHTML = `
                                 <h1>Seus Quizzes</h1>
-                                <ion-icon name="add-circle" onclick="criarQuizz()"></ion-icon>`;
+                                <ion-icon name="add-circle" data-identifier="create-quizz" onclick="criarQuizz()"></ion-icon>`;
     sectionUsuario.appendChild(divTituloUsuario);
     const ulUsuario = document.createElement('ul');
     ulUsuario.classList.add('quizzes-usuario');
@@ -32,6 +34,7 @@ function paginaPrincipal(body) {
     main.appendChild(sectionUsuario);
     const sectionTodos = document.createElement('section');
     sectionTodos.classList.add('todos');
+    sectionTodos.setAttribute('data-identifier', 'general-quizzes')
     main.appendChild(sectionTodos);
     const divTituloTodos = document.createElement('div');
     divTituloTodos.classList.add('titulo-quizzes-todos');
@@ -54,7 +57,7 @@ function renderizarQuizzesUsuario() {
         listaQuizzesUsuario.innerHTML = `
             <div class="quizz-usuario-vazio">
                 <h1>Você não criou nenhum quizz ainda :(</h1>
-                <button onclick="telaInfoBasicaQuiz()">Criar Quizz</button> 
+                <button data-identifier="create-quizz" onclick="telaInfoBasicaQuiz()">Criar Quizz</button> 
             </div>
             `
     } else {
@@ -63,7 +66,7 @@ function renderizarQuizzesUsuario() {
         listaQuizzesUsuario.innerHTML += ``;
         for (let i = 0; i < quizzesUsuario.length; i++) {
             listaQuizzesUsuario.innerHTML += `
-            <li class="quizz">
+            <li class="quizz" data-identifier="quizz-card">
                 <div class="degrade">
                     <img src="${quizzesUsuarioSerializados[i].image}" onclick="quizzSelecionado()" onerror="this. style. display = 'none'">
                 </div>
@@ -91,7 +94,7 @@ function renderizarQuizzes(resposta) {
 
     for (let i = 0; i < quizzes.length; i++) {
         listaQuizzes.innerHTML += `
-        <li class="quizz" id="${quizzes[i].id}">
+        <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
             <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
             </div>
             <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
@@ -139,6 +142,17 @@ function renderizarPaginaQuizz(resposta) {
     const perguntas = document.createElement('div');
     perguntas.classList.add('perguntas-pagina-quizz');
     main.appendChild(perguntas);
+    const resumoQuizz = document.createElement('div');
+    resumoQuizz.classList.add('resumo-pagina-quizz');
+    resumoQuizz.setAttribute('data-identifier', 'quizz-result')
+    main.appendChild(resumoQuizz);
+    const navegacaoFinalQuizz = document.createElement('div');
+    navegacaoFinalQuizz.classList.add('navegacao-pagina-quizz');
+    navegacaoFinalQuizz.innerHTML = `
+        <button class="reiniciar-quizz" onclick="reiniciaQuizz()">Reiniciar Quizz</button>
+        <div class="voltar-home"><p onclick="voltaHome()">Voltar pra home</p></div>
+    `
+    main.appendChild(navegacaoFinalQuizz);
 
     renderizarQuizz();
 }
@@ -162,14 +176,14 @@ function renderizarQuizz() {
                 </div>`
             } else {
                 respostasMisturadas += `
-                <div class="resposta ocultar" onclick="verificarResposta(this, ${respostas[u].isCorrectAnswer}, ${i})">
+                <div class="resposta ocultar" data-identifier="answer" onclick="verificarResposta(this, ${respostas[u].isCorrectAnswer}, ${i})">
                     <img src="${respostas[u].image}" onerror="this. style. display = 'none'">
                     <p class="errada">${respostas[u].text}</p>
                 </div>`
             }
         }
         perguntas.innerHTML += `
-            <div class="pergunta-pagina-quizz">
+            <div class="pergunta-pagina-quizz" data-identifier="question">
                 <div class="titulo-pergunta" style = "background-color: ${quizz.questions[i].color}">
                    <p>${quizz.questions[i].title}</p>
                  </div>` + respostasMisturadas +
@@ -193,17 +207,66 @@ function verificarResposta(elemento, valor) {
             const verifica = respostas[i].classList.contains('selecionado');
 
             if (verifica !== true) {
-                respostas[i].classList.add('naoSelecionada');
+                respostas[i].classList.add('naoSelecionado');
             }
         }
-
-        const proximaPergunta = perguntaRespondida.nextElementSibling;
-        setTimeout(function () { proximaPergunta.scrollIntoView() }, 2000); /* linkar última pergunta com o resultado do quizz */
 
         if (valor === true) {
             respostasCertas++;
         } else {
             respostasErradas++
         }
+
     }
+
+    somaRespostas = respostasCertas + respostasErradas;
+    if (somaRespostas === quantidadePerguntas) {
+        resultadoQuizz();
+        const proximaPergunta = perguntaRespondida.parentNode.nextElementSibling;
+
+        setTimeout(function () { proximaPergunta.scrollIntoView({ behaviour: "smooth", block: "center" }) }, 2000);
+    } else {
+        const proximaPergunta = perguntaRespondida.nextElementSibling;
+        setTimeout(function () { proximaPergunta.scrollIntoView({ behaviour: "smooth", block: "center" }) }, 2000);
+    }
+}
+
+function resultadoQuizz() {
+    let resultado = document.querySelector('.resumo-pagina-quizz');
+    resultado.innerHTML = ``;
+    let porcentagemFinal = Math.round((respostasCertas / quantidadePerguntas) * 100);
+    let niveis = quizz.levels;
+    const levelMaximo = niveis.filter(lM => lM.minValue <= porcentagemFinal);
+    const levelFinal = levelMaximo[levelMaximo.length - 1];
+    resultado.innerHTML = `
+        <div class="titulo-nivel-final"><p>${porcentagemFinal}% de acerto: ${levelFinal.title}</p></div>
+        <div class="info-nivel-final">
+        <img src="${levelFinal.image}">
+        <p>${levelFinal.text}</p>
+        </div>`
+}
+
+function reiniciaQuizz() {
+    const resetResultado = document.querySelector('.resumo-pagina-quizz');
+    resetResultado.innerHTML = ``;
+    const resetRespostas = document.querySelectorAll('.resposta');
+    for (let i = 0; i < resetRespostas.length; i++) {
+        resetRespostas[i].classList.add('ocultar');
+        const verificaSelecionado = resetRespostas[i].classList.contains('selecionado');
+        const verificaNaoSelecionado = resetRespostas[i].classList.contains('naoSelecionado');
+        if (verificaSelecionado === true) {
+            resetRespostas[i].classList.remove('selecionado');
+        } else if (verificaNaoSelecionado === true) {
+            resetRespostas[i].classList.remove('naoSelecionado');
+        }
+    }
+    respostasCertas = 0;
+    respostasErradas = 0;
+    somaRespostas = 0;
+    const primeiraPergunta = document.querySelector('.pergunta-pagina-quizz')
+    setTimeout(function () { primeiraPergunta.scrollIntoView({ behaviour: "smooth", block: "center" }) }, 2000);
+}
+
+function voltaHome() {
+    window.location.reload();
 }
