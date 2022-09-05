@@ -446,7 +446,7 @@ function verificaNiveis(){
             mensagemErro(divPergunta.children[1].children[1],'Deve ser um valor entre 0 e 100');
         }
         else{
-            if(divPergunta.children[1].children[1].value === 0){
+            if(parseInt(divPergunta.children[1].children[1].value) === 0){
                 is0 = true;
             }
             level.minValue = divPergunta.children[1].children[1].value;
