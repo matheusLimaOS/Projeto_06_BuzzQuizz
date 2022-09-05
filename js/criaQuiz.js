@@ -486,7 +486,7 @@ function visualizarQuizFeito(){
     `
     container.innerHTML += `
         <button class='submit'> Acessar Quizz </button>
-        <button class='retornar' onclick="retornar()"> Voltar pra home </button>
+        <button class='retornar' onclick="quizzCriado(${quiz.id})"> Voltar pra home </button>
     `
 
     body.appendChild(container)

@@ -5,13 +5,11 @@ let respostasCertas = 0;
 let respostasErradas = 0;
 let somaRespostas = 0;
 let quantidadePerguntas = 0;
-let quizzesUsuarioLocal = "";
-let quizzesUsuarioDesserializado = [];
 let idsUsuarioLocal = "";
 let idsUsuarioDesserializado = [];
-let quizzUsuarioDesserializado = {};
 let getQuizz = [];
 let quizzesFiltrados = [];
+
 
 function paginaPrincipal(body) {
     body = document.querySelector('body');
@@ -55,10 +53,16 @@ paginaPrincipal();
 /*  */
 
 function getQuizzesUsuario() {
-    quizzesUsuarioLocal = localStorage.getItem("lista-quizzes");
-    quizzesUsuarioDesserializado = JSON.parse(quizzesUsuarioLocal);
-    idsUsuarioLocal = localStorage.getItem("lista-ids");
+    idsUsuarioLocal = localStorage.getItem("lista-quizzes");
+    console.log(idsUsuarioLocal);
     idsUsuarioDesserializado = JSON.parse(idsUsuarioLocal);
+    console.log(idsUsuarioDesserializado);
+    if (idsUsuarioDesserializado !== null) {
+        for (let i = 0; i < idsUsuarioDesserializado.length; i++) {
+            const promise = axios.get(`${urlAPI}/${idsUsuarioDesserializado[i]}`);
+            promise.then(renderizarQuizzes);
+        }
+    }
     renderizarQuizzesUsuario();
 }
 
@@ -66,25 +70,25 @@ function getQuizzesUsuario() {
 
 function renderizarQuizzesUsuario() {
     let listaQuizzesUsuario = document.querySelector('.quizzes-usuario');
-    if (quizzesUsuarioLocal === null) {
+    if (idsUsuarioLocal === null) {
         listaQuizzesUsuario.innerHTML = `
             <div class="quizz-usuario-vazio">
                 <h1>Você não criou nenhum quizz ainda :(</h1>
-                <button data-identifier="create-quizz" onclick="visualizarQuizFeito()">Criar Quizz</button> 
+                <button data-identifier="create-quizz" onclick="telaInfoBasicaQuiz()">Criar Quizz</button> 
             </div>
             `
     } else {
         const tituloUsuario = document.querySelector('.titulo-quizzes-usuario');
         tituloUsuario.classList.remove('hide');
         listaQuizzesUsuario.innerHTML += ``;
-        for (let i = 0; i < quizzesUsuarioDesserializado.length; i++) {
+        for (let i = 0; i < quizzes.length; i++) {
             listaQuizzesUsuario.innerHTML += `
             <li class="quizz-usuario" data-identifier="quizz-card">
-                <div class="degrade" onclick="quizzSelecionadoUsuario(${quizzesUsuarioDesserializado[i].id})">
-                    <img src="${quizzesUsuarioDesserializado[i].image}" onerror="this. style. display = 'none'">
+                <div class="degrade" onclick="quizzSelecionadoUsuario(${quizzes[i].id})">
+                    <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
                 </div>
                 <div class="titulo-quizz">
-                <p onclick="quizzSelecionadoUsuario(${quizzesUsuarioDesserializado[i].id})">${quizzesUsuarioDesserializado[i].title}</p>
+                <p onclick="quizzSelecionadoUsuario(${quizzes[i].id})">${quizzes[i].title}</p>
                 </div>
             </li> 
             `
@@ -100,23 +104,23 @@ function getQuizzes() {
 function renderizarQuizzes(resposta) {
     quizzes = resposta.data;
     console.log(quizzes);
-    console.log(quizzesUsuarioDesserializado);
+    console.log(quizzes);
     console.log(idsUsuarioDesserializado);
-    if (quizzesUsuarioDesserializado !== null) {
-        quizzesFiltrados = quizzes.filter(item => !quizzesUsuarioDesserializado.some(item2 => item2.id === item.id));
+    if (quizzes !== null) {
+        quizzesFiltrados = quizzes.filter(item => !quizzes.some(item2 => item2.id === item.id));
         console.log(quizzesFiltrados);
     }
     let listaQuizzes = document.querySelector('.quizzes-todos');
     listaQuizzes.innerHTML = ``;
-    if (quizzesUsuarioDesserializado !== null) {
+    if (quizzes !== null) {
         for (let i = 0; i < quizzesFiltrados.length; i++) {
             listaQuizzes.innerHTML += `
         <li class="quizz" id="${quizzesFiltrados[i].id}" data-identifier="quizz-card">
-            <div class="degrade" onclick="quizzSelecionadoTodos(${quizzesFiltrados[i].id})">
+            <div class="degrade" onclick="quizzSelecionado(${quizzesFiltrados[i].id})">
             </div>
             <img src="${quizzesFiltrados[i].image}" onerror="this. style. display = 'none'">
             <div class="titulo-quizz">
-            <p onclick="quizzSelecionadoTodos(${quizzesFiltrados[i].id})">${quizzesFiltrados[i].title}</p>
+            <p onclick="quizzSelecionado(${quizzesFiltrados[i].id})">${quizzesFiltrados[i].title}</p>
             </div>
         </li> 
         `
@@ -125,11 +129,11 @@ function renderizarQuizzes(resposta) {
         for (let i = 0; i < quizzes.length; i++) {
             listaQuizzes.innerHTML += `
         <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
-            <div class="degrade" onclick="quizzSelecionadoTodos(${quizzes[i].id})">
+            <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
             </div>
             <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
             <div class="titulo-quizz">
-            <p onclick="quizzSelecionadoTodos(${quizzes[i].id})">${quizzes[i].title}</p>
+            <p onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</p>
             </div>
         </li> 
         `
@@ -145,7 +149,7 @@ function criarQuizz() {
     telaInfoBasicaQuiz();
 }
 
-function quizzSelecionadoTodos(idSelecionado) {
+function quizzSelecionado(idSelecionado) {
     const paginaInicial = document.querySelector('.pagina-inicial');
     paginaInicial.innerHTML = ``;
     const promise = axios.get(`${urlAPI}/${idSelecionado}`);
@@ -191,7 +195,7 @@ function renderizarPaginaQuizz(resposta) {
     renderizarQuizz();
 }
 
-function quizzSelecionadoUsuario(idLocal) {
+/* function quizzSelecionadoUsuario(idLocal) {
     const paginaInicial = document.querySelector('.pagina-inicial');
     paginaInicial.innerHTML = ``;
 
@@ -240,7 +244,7 @@ function renderizarPaginaQuizzLocal() {
     main.appendChild(navegacaoFinalQuizz);
 
     renderizarQuizz();
-}
+} */
 
 function renderizarQuizz() {
     let perguntas = document.querySelector('.perguntas-pagina-quizz');
@@ -364,117 +368,3 @@ function reiniciaQuizz() {
 function voltaHome() {
     window.location.reload();
 }
-
-/* */
-function testeUsuario() {
-    quizzUsuarioDesserializado = {
-        title: "Teste do quizz",
-        image: "https://http.cat/411.jpg",
-        questions: [
-            {
-                title: "Título da pergunta 1",
-                color: "#123456",
-                answers: [
-                    {
-                        text: "Texto da resposta 1",
-                        image: "https://http.cat/411.jpg",
-                        isCorrectAnswer: true
-                    },
-                    {
-                        text: "Texto da resposta 2",
-                        image: "https://http.cat/412.jpg",
-                        isCorrectAnswer: false
-                    }
-                ]
-            },
-            {
-                title: "Título da pergunta 2",
-                color: "#e27107",
-                answers: [
-                    {
-                        text: "Texto da resposta 1",
-                        image: "https://http.cat/411.jpg",
-                        isCorrectAnswer: true
-                    },
-                    {
-                        text: "Texto da resposta 2",
-                        image: "https://http.cat/412.jpg",
-                        isCorrectAnswer: false
-                    }
-                ]
-            },
-            {
-                title: "Título da pergunta 3",
-                color: "#A0438D",
-                answers: [
-                    {
-                        text: "Texto da resposta 1",
-                        image: "https://http.cat/411.jpg",
-                        isCorrectAnswer: true
-                    },
-                    {
-                        text: "Texto da resposta 2",
-                        image: "https://http.cat/412.jpg",
-                        isCorrectAnswer: false
-                    }
-                ]
-            }
-        ],
-        levels: [
-            {
-                title: "Título do nível 2",
-                image: "https://http.cat/411.jpg",
-                text: "Descrição do nível 2",
-                minValue: 50
-            },
-            {
-                title: "Título do nível 1",
-                image: "https://http.cat/412.jpg",
-                text: "Descrição do nível 1",
-                minValue: 0
-            }
-        ]
-    };
-    postUsuario();
-}
-
-function postUsuario() {
-    const promise = axios.post("https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes", quizzUsuarioDesserializado);
-    promise.then(guardaId);
-}
-
-function guardaId(promise) {
-    if (idsUsuarioDesserializado === null) {
-        idsUsuarioDesserializado = [];
-        idsUsuarioDesserializado.push(promise.data.id);
-        guardaQuizz(promise.data);
-        console.log(promise);
-        console.log(promise.data.id);
-        const idsUsuarioSerializado = JSON.stringify(idsUsuarioDesserializado);
-        localStorage.setItem("lista-ids", idsUsuarioSerializado);
-    } else {
-        idsUsuarioDesserializado.push(promise.data.id);
-        guardaQuizz(promise.data);
-        console.log(promise);
-        console.log(promise.data.id);
-        const idsUsuarioSerializado = JSON.stringify(idsUsuarioDesserializado);
-        localStorage.setItem("lista-ids", idsUsuarioSerializado);
-    }
-}
-
-function guardaQuizz(quizzDoUsuario) {
-    if (quizzesUsuarioDesserializado === null) {
-        quizzesUsuarioDesserializado = [];
-        quizzesUsuarioDesserializado.push(quizzDoUsuario);
-        const quizzUsuarioSerializado = JSON.stringify(quizzesUsuarioDesserializado);
-        localStorage.setItem("lista-quizzes", quizzUsuarioSerializado);
-    } else {
-        quizzesUsuarioDesserializado.push(quizzDoUsuario);
-        const quizzUsuarioSerializado = JSON.stringify(quizzesUsuarioDesserializado);
-        localStorage.setItem("lista-quizzes", quizzUsuarioSerializado);
-    }
-}
-
-
-
-/*  */
