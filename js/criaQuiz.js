@@ -45,6 +45,7 @@ function telaInfoBasicaQuiz(){
 }
 
 function mensagemErro(irmão,texto){
+    limpaErro();
     let divMsg = document.createElement('div');
 
     divMsg.innerHTML = texto;
@@ -88,7 +89,7 @@ function criaHeader(body){
 
 function criaPerguntas(){
     limparBody();
-
+    eventoErro();
     let body = document.querySelector('body');
     let container = document.createElement('div');
     criaHeader(body);
@@ -343,7 +344,7 @@ function criaNiveis(){
                     <ion-icon name="create-outline"></ion-icon>
                 </button>
             </div>
-            <form class="formulario" data-identifier="question-form">
+            <form class="formulario" data-identifier="level">
                 <input type='text' placeholder = "Título do nível" minlength='20' required/>
                 <input placeholder = "% de acerto mínima" required/>
                 <input type='url' placeholder = "URL da imagem do nível" required/>
@@ -360,7 +361,7 @@ function criaNiveis(){
                         <ion-icon name="create-outline"></ion-icon>
                     </button>
                 </div>
-                <form class="displayNone" data-identifier="question-form">
+                <form class="displayNone" data-identifier="level">
                     <input type='text' placeholder = "Título do nível" minlength='20' required/>
                     <input placeholder = "% de acerto mínima" required/>
                     <input type='url' placeholder = "URL da imagem do nível" required/>
@@ -388,9 +389,10 @@ function finalizaQuiz(){
         promise.then((res)=>{
             let quizzes = localStorage.getItem("lista-quizzes");
             if(quizzes === undefined || quizzes === null){
-                localStorage.setItem('lista-quizzes',[JSON.stringify(res.data.id)]);
+                localStorage.setItem('lista-quizzes',JSON.stringify([res.data.id]));
             }
             else{
+
                 let quiz = JSON.parse(quizzes);
                 quiz.push(res.data.id);
                 quizzes = JSON.stringify(quiz);
@@ -501,8 +503,8 @@ function visualizarQuizFeito(){
         </div>
     `
     container.innerHTML += `
-        <button class='submit'> Acessar Quizz </button>
-        <button class='retornar' onclick="quizzCriado(${quiz.id})"> Voltar pra home </button>
+        <button class='submit' > Acessar Quizz </button>
+        <button class='retornar' onclick="retornar()"> Voltar pra home </button>
     `
 
     body.appendChild(container)
