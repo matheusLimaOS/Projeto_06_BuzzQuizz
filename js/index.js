@@ -70,7 +70,7 @@ function renderizarQuizzesUsuario() {
         listaQuizzesUsuario.innerHTML = `
             <div class="quizz-usuario-vazio">
                 <h1>Você não criou nenhum quizz ainda :(</h1>
-                <button data-identifier="create-quizz" onclick="visualizarQuizFeito()">Criar Quizz</button> 
+                <button data-identifier="create-quizz" onclick="telaInfoBasicaQuiz()">Criar Quizz</button> 
             </div>
             `
     } else {
