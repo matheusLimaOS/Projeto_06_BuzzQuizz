@@ -55,12 +55,9 @@ paginaPrincipal();
 
 function getQuizzesUsuario() {
     idsUsuarioLocal = localStorage.getItem("lista-quizzes");
-    console.log(idsUsuarioLocal);
     idsUsuarioDesserializado = JSON.parse(idsUsuarioLocal);
-    console.log(idsUsuarioDesserializado);
     if (idsUsuarioDesserializado !== null) {
         for (let i = 0; i < idsUsuarioDesserializado.length; i++) {
-            console.log(idsUsuarioDesserializado[i])
             const promise = axios.get(`${urlAPI}/${idsUsuarioDesserializado[i]}`);
             promise.then(renderizarQuizzesUsuario);
         }
@@ -81,18 +78,17 @@ function renderizarQuizzesUsuario(resposta) {
             </div>
             `
     } else {
-        console.log(resposta);
         quizzesUsuario = resposta.data;
         const tituloUsuario = document.querySelector('.titulo-quizzes-usuario');
         tituloUsuario.classList.remove('hide');
         listaQuizzesUsuario.innerHTML += ``;
         listaQuizzesUsuario.innerHTML += `
             <li class="quizz-usuario" data-identifier="quizz-card">
-                <div class="degrade" onclick="quizzSelecionado(${idsUsuarioDesserializado})">
+                <div class="degrade" onclick="quizzSelecionado(${quizzesUsuario.id})">
                     <img src="${quizzesUsuario.image}" onerror="this. style. display = 'none'">
                 </div>
                 <div class="titulo-quizz">
-                <p onclick="quizzSelecionado(${idsUsuarioDesserializado})">${quizzes.title}</p>
+                <p onclick="quizzSelecionado(${quizzesUsuario.id})">${quizzesUsuario.title}</p>
                 </div>
             </li> 
             `
@@ -103,7 +99,6 @@ function renderizarQuizzesUsuario(resposta) {
 function getQuizzes() {
     const promise = axios.get(`${urlAPI}`);
     promise.then(renderizarQuizzes);
-    console.log("funciona");
 }
 
 function renderizarQuizzes(resposta) {
@@ -112,16 +107,30 @@ function renderizarQuizzes(resposta) {
     listaQuizzes.innerHTML = ``;
 
     for (let i = 0; i < quizzes.length; i++) {
-        listaQuizzes.innerHTML += `
-        <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
-        <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
-        </div>
-        <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
-        <div class="titulo-quizz">
-        <p onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</p>
-        </div>
-    </li> 
-    `
+        let quizzAtual = quizzes[i].id;
+        if (idsUsuarioLocal !== null) {
+            if (!idsUsuarioDesserializado.includes(quizzAtual)) {
+                listaQuizzes.innerHTML += `
+                    <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
+                    <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
+                    </div>
+                    <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+                    <div class="titulo-quizz">
+                    <p onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</p>
+                    </div>
+                    </li> `
+            }
+        } else {
+            listaQuizzes.innerHTML += `
+                <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
+                <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
+                </div>
+                <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+                <div class="titulo-quizz">
+                <p onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</p>
+                </div>
+                </li> `
+        }
     }
 }
 
@@ -139,9 +148,22 @@ function quizzSelecionado(idSelecionado) {
     promise.then(renderizarPaginaQuizz);
 }
 
+function quizCriadoSelecionado(idSelecionado) {
+    let body = document.querySelector('body');
+    const main = document.createElement('main');
+    main.classList.add('pagina-inicial');
+    body.appendChild(main);
+    const navbar = document.querySelector(".navbar");
+    navbar.innerHTML = ``;
+    const container = document.querySelector(".containerCriaQuiz");
+    container.innerHTML = ``;
+
+    const promise = axios.get(`${urlAPI}/${idSelecionado}`);
+    promise.then(renderizarPaginaQuizz);
+}
+
 function renderizarPaginaQuizz(resposta) {
     quizz = resposta.data;
-    console.log(quizz)
 
     const main = document.querySelector('main');
     main.classList.remove('pagina-inicial');

@@ -503,7 +503,7 @@ function visualizarQuizFeito(){
         </div>
     `
     container.innerHTML += `
-        <button class='submit' > Acessar Quizz </button>
+        <button class='submit' onclick="quizCriadoSelecionado(${quiz.title})"> Acessar Quizz </button>
         <button class='retornar' onclick="retornar()"> Voltar pra home </button>
     `
 
