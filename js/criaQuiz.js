@@ -104,25 +104,25 @@ function criaPerguntas(){
                 </button>
             </div>
             <form class="formulario" data-identifier="question-form">
-                <input type='text' placeholder = "Texto da pergunta" minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+                <input type='text' placeholder = "Texto da pergunta" minlength='20' required/>
                 <input placeholder = "Cor de fundo da pergunta"/>
                 <div class='respostaCorreta'>
                     <div class="titulo">
                         <p>Resposta Correta</p>
                     </div>
-                    <input type='text' placeholder = "Resposta correta" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                    <input type='url' placeholder = "URL da imagem" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                    <input type='text' placeholder = "Resposta correta" />
+                    <input type='url' placeholder = "URL da imagem" />
                 </div>
                 <div class='respostaErrada'>
                     <div class="titulo">
                         <p>Resposta incorretas</p>
                     </div>
-                    <input type='text' placeholder = "Resposta incorreta 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                    <input type='url' placeholder = "URL da imagem 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                    <input type='text' placeholder = "Resposta incorreta 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                    <input type='url' placeholder = "URL da imagem 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                    <input type='text' placeholder = "Resposta incorreta 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>   
-                    <input type='url' placeholder = "URL da imagem 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>  
+                    <input type='text' placeholder = "Resposta incorreta 1" />
+                    <input type='url' placeholder = "URL da imagem 1" />
+                    <input type='text' placeholder = "Resposta incorreta 2" />
+                    <input type='url' placeholder = "URL da imagem 2" />
+                    <input type='text' placeholder = "Resposta incorreta 3" />   
+                    <input type='url' placeholder = "URL da imagem 3" />  
                 </div>
             </form>
         </div>
@@ -137,25 +137,25 @@ function criaPerguntas(){
                     </button> 
                 </div>
                 <form class="displayNone" data-identifier="question-form">
-                    <input type='text' placeholder = "Texto da pergunta" maxlength='65' minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+                    <input type='text' placeholder = "Texto da pergunta" required/>
                     <input placeholder = "Cor de fundo da pergunta"/>
                     <div class='respostaCorreta'>
                         <div class="titulo">
                             <p>Resposta Correta</p>
                         </div>
-                        <input type='text' placeholder = "Resposta correta" oninvalid="mensagemErro(this,'${messages[0]}')" required/>
-                        <input type='url' placeholder = "URL da imagem" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                        <input type='text' placeholder = "Resposta correta" required/>
+                        <input type='url' placeholder = "URL da imagem" />
                     </div>
                     <div class='respostaErrada'>
                         <div class="titulo">
                             <p>Resposta incorretas</p>
                         </div>
-                        <input type='text' placeholder = "Resposta incorreta 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                        <input type='url' placeholder = "URL da imagem 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                        <input type='text' placeholder = "Resposta incorreta 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                        <input type='url' placeholder = "URL da imagem 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
-                        <input type='text' placeholder = "Resposta incorreta 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>   
-                        <input type='url' placeholder = "URL da imagem 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>  
+                        <input type='text' placeholder = "Resposta incorreta 1" />
+                        <input type='url' placeholder = "URL da imagem 1" />
+                        <input type='text' placeholder = "Resposta incorreta 2" />
+                        <input type='url' placeholder = "URL da imagem 2" />
+                        <input type='text' placeholder = "Resposta incorreta 3" />   
+                        <input type='url' placeholder = "URL da imagem 3" />  
                     </div>
                 </form>
             </div>
@@ -382,7 +382,7 @@ function finalizaQuiz(){
     let niveis = verificaNiveis()
     if(niveis!==false){
         quiz.levels=niveis;
-
+        console.log(quiz);
         let promise = axios.post('https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes',quiz);
 
         promise.then((res)=>{
