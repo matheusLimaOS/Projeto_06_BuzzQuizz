@@ -1,16 +1,16 @@
 let quiz = {
-    title:"",
-    image:"",
-    questions: [{}]
+    title:"Naruto",
+    image:"https://c4.wallpaperflare.com/wallpaper/935/641/266/lindo-cachorro-wallpaper-preview.jpg",
+    questions: [],
+    levels: []
 }
-
 let messages = [
     'É necessário que o titulo tenha entre 20 e 65 caracteres',
     'É necessário informar uma URL de imagem válida!',
     'É necessário que a quantidade de perguntas sejá valida e maior que 3!'
 ]
-let quantNiveis = 0;
-let quantPerg = 0;
+let quantNiveis;
+let quantPerg;
 
 function limparBody(){
     let body = document.querySelector('body');
@@ -18,10 +18,9 @@ function limparBody(){
 }
 
 function telaInfoBasicaQuiz(){
+    checaURL()
     let body = document.querySelector('body');
     let container = document.createElement('div');
-
-    eventoErro();
 
     limparBody();
     criaHeader(body);
@@ -39,6 +38,7 @@ function telaInfoBasicaQuiz(){
     `;
 
     body.appendChild(container);
+    eventoErro();
 }
 
 function mensagemErro(irmão,texto){
@@ -60,23 +60,18 @@ function limpaErro(){
     }
 }
 
-function valida(irmão,num){
-    mensagemErro(irmão,messages[num]);
-}
-
 function eventoErro(){
-    let input = document.querySelectorAll('input');
-
-    for(let i=0; i<input.length;i++){
-        input.setCustomValidity('');
+    let inputs = document.querySelectorAll("input");
+    for(let i=0;i<inputs.length;i++){
+        inputs[0].addEventListener("change", limpaErro);
     }
-
-    document.querySelector("body").addEventListener("click", limpaErro);
 }
 
 function onSubmit() {
-    quantPerg = document.querySelector(".containerCriaQuiz form input:nth-child(3)");
-    quantNiveis = document.querySelector(".containerCriaQuiz form input:nth-child(4)");
+    quiz.title = document.querySelector(".containerCriaQuiz form input:nth-child(1)").value;
+    quiz.image = document.querySelector(".containerCriaQuiz form input:nth-child(2)").value;
+    quantPerg = document.querySelector(".containerCriaQuiz form input:nth-child(3)").value;
+    quantNiveis = document.querySelector(".containerCriaQuiz form input:nth-child(4)").value;
 
     criaPerguntas();
 }
@@ -93,7 +88,6 @@ function criaPerguntas(){
 
     let body = document.querySelector('body');
     let container = document.createElement('div');
-    quantPerg = 4;
     criaHeader(body);
 
     container.classList.add('containerCriaQuiz')
@@ -169,9 +163,11 @@ function criaPerguntas(){
         <button class='submit' onClick="verificaPerguntas()"> Prosseguir para criar niveis </button>
     `
     body.appendChild(container);
+    eventoErro();
 }
 
 function expandir(numPergunta){
+    limpaErro();
     esconder();
     let pergunta = document.querySelector(`.containerCriaQuiz .pergunta:nth-child(${numPergunta})`);
     let buttonExpandir = pergunta.children[0].children[1];
@@ -180,7 +176,11 @@ function expandir(numPergunta){
     form.classList.add('formulario');
     form.classList.remove('displayNone');
 }
+function checaURL(url){
+    var valid = /^(ftp|http|https):\/\/[^ "]+$/.test(url);  
 
+    return valid
+}
 function esconder(){
     let icons = document.querySelectorAll('.ion-icon');
     let forms = document.querySelectorAll('form');
@@ -193,6 +193,8 @@ function esconder(){
 }
 
 function verificaPerguntas(){
+    limpaErro();
+    let perguntas = [];
     let pergunta = {
         title: "",
         color: "",
@@ -227,17 +229,17 @@ function verificaPerguntas(){
         verificaPerguntaTitle(divPergunta.children[1].children[0]);
         let respostas = verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas);
 
-        console.log(respostas);
-
         if(respostas!==false){
             pergunta.answers = respostas;
+            perguntas.push(pergunta);
         }
         else{
             isTudoOK = false;
         }
     }
     if(isTudoOK){
-        limparBody();
+        quiz.questions = perguntas;
+        criaNiveis();
     }
     setTimeout(()=>{
         button.removeAttribute('disabled')
@@ -268,12 +270,13 @@ function verificaPerguntaColor(irmão){
 
 }
 function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
+    limpaErro();
     let resposta;
     let respostas = [];
     let existeRespostaCerta = false;
     let existeRespostaErrada = false;
 
-    if(divRespostaCorreta.children[1].value.length > 0){
+    if(divRespostaCorreta.children[1].value.length > 0 && checaURL(divRespostaErradas.children[2].value)){
         resposta = {
             text: divRespostaCorreta.children[1].value,
             image: divRespostaCorreta.children[2].value,
@@ -283,7 +286,7 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
         existeRespostaCerta = true;
     }
 
-    if(divRespostaErradas.children[5].value.length > 0){
+    if(divRespostaErradas.children[5].value.length > 0 && checaURL(divRespostaErradas.children[6].value)){
         resposta = {
             text: divRespostaErradas.children[5].value,
             image: divRespostaErradas.children[6].value,
@@ -293,7 +296,7 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
         existeRespostaErrada = true;
     }
 
-    if(divRespostaErradas.children[3].value.length > 0){
+    if(divRespostaErradas.children[3].value.length > 0 && checaURL(divRespostaErradas.children[4].value)){
         resposta = {
             text: divRespostaErradas.children[3].value,
             image: divRespostaErradas.children[4].value,
@@ -303,7 +306,7 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
         existeRespostaErrada = true;
     }
 
-    if(divRespostaErradas.children[1].value.length > 0){
+    if(divRespostaErradas.children[1].value.length > 0 && checaURL(divRespostaErradas.children[2].value)){
         resposta = {
             text: divRespostaErradas.children[1].value,
             image: divRespostaErradas.children[2].value,
@@ -322,8 +325,169 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
     }
 
 }
-function telaNiveis(){
+function criaNiveis(){
+    limparBody();
+    let body = document.querySelector('body');
+    let container = document.createElement('div');
+    criaHeader(body);
+
+    container.classList.add('containerCriaQuiz')
+    container.innerHTML += '<h1> Crie suas perguntas </h1>';
+        container.innerHTML += `
+        <div class='pergunta'>
+            <div class="titulo">
+                <p>Nivel 1</p>
+                <button class="ion-icon displayNone" onClick="expandir(2)" data-identifier="expand">
+                    <ion-icon name="create-outline"></ion-icon>
+                </button>
+            </div>
+            <form class="formulario" data-identifier="question-form">
+                <input type='text' placeholder = "Título do nível" minlength='20' required/>
+                <input placeholder = "% de acerto mínima" required/>
+                <input type='url' placeholder = "URL da imagem do nível" required/>
+                <input type='text' placeholder = "Descrição do nível" required/>
+            </form>
+        </div>
+    `;
+    for(i=2;i<=quantNiveis;i++){
+        container.innerHTML += `
+            <div class='pergunta'>
+                <div class="titulo">
+                    <p>Nivel ${i}</p>
+                    <button class="ion-icon" onClick="expandir(${i+1})" data-identifier="expand">
+                        <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                </div>
+                <form class="displayNone" data-identifier="question-form">
+                    <input type='text' placeholder = "Título do nível" minlength='20' required/>
+                    <input placeholder = "% de acerto mínima" required/>
+                    <input type='url' placeholder = "URL da imagem do nível" required/>
+                    <input type='text' placeholder = "Descrição do nível" required/>
+                </form>
+            </div>
+        `;
+    }
+
+    container.innerHTML += `
+        <button class='submit' onClick="finalizaQuiz()"> Finalizar Quizz </button>
+    `
+    body.appendChild(container);
+    eventoErro();
+}
+function finalizaQuiz(){
+    let niveis = verificaNiveis()
+    if(niveis!==false){
+        quiz.levels=niveis;
+
+        let promise = axios.post('https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes',quiz);
+
+        promise.then((res)=>{
+            let quizzes = localStorage.getItem("lista-quizzes");
+            if(quizzes === undefined){
+                localStorage.setItem('lista-quizzes',res.data.id);
+            }
+            else{
+                quizzes.concat(','+res.data.id);
+                localStorage.setItem('lista-quizzes',quizzes);
+            }
+
+            visualizarQuizFeito();
+        })
+    }
+    else{
+
+    }
+    
+}
+function verificaNiveis(){
+    limpaErro();
+    let levels = [];
+
+    let isTudoOK = true;
+    let button = document.querySelector('.submit');
+    button.setAttribute('disabled','');
+
+    for(let i=1;i<=quantNiveis;i++){
+        let level = {
+            title: "",
+            image: "",
+            text: "",
+            minValue: 0
+        }
+
+        let divPergunta = document.querySelector(`.containerCriaQuiz .pergunta:nth-child(${i+1})`); 
+
+        if(divPergunta.children[1].children[3].value.length < 30){
+            isTudoOK=false
+            mensagemErro(divPergunta.children[1].children[3],'Precisa ter no minimo 30 caracteres');
+        }
+        else{
+            level.text = divPergunta.children[1].children[3].value;
+        }
+
+        if(checaURL(divPergunta.children[1].children[2])){
+            isTudoOK=false
+            mensagemErro(divPergunta.children[1].children[2],'É necesário que seja uma URL válida');
+        }
+        else{
+            level.image = divPergunta.children[1].children[2].value;
+        }
+
+        if(divPergunta.children[1].children[1].value < 0 || divPergunta.children[1].children[1].value > 100 || divPergunta.children[1].children[1].value ==='' ){
+            isTudoOK=false
+            mensagemErro(divPergunta.children[1].children[1],'Deve ser um valor entre 0 e 100');
+        }
+        else{
+            level.minValue = divPergunta.children[1].children[1].value;
+        }
+
+        if(divPergunta.children[1].children[0].value.length < 10){
+            isTudoOK=false
+            mensagemErro(divPergunta.children[1].children[0],'Precisa ter no minimo 10 caracteres');
+        }
+        else{
+            level.title = divPergunta.children[1].children[2].value;
+        }
+
+        levels.push(level);
+    }
+
+    setTimeout(()=>{
+        button.removeAttribute('disabled')
+    },3000)
+    if(isTudoOK===true){
+        return levels;
+    }
+    else{
+        return false;
+    }
+}
+function retornar (){
+    limparBody();
+    paginaPrincipal();
+}
+
+function visualizarQuizFeito(){
     limparBody();
 
-    
+    let body = document.querySelector('body');
+    let container = document.createElement('div');
+
+    criaHeader(body);
+
+    container.classList.add('containerCriaQuiz');
+
+    container.innerHTML += '<h1> Seu quizz está pronto! </h1>';
+    container.innerHTML += `
+        <div class='viewQuiz'>
+            <img src="${quiz.image}"/>
+            <p>${quiz.title}</p>
+        </div>
+    `
+    container.innerHTML += `
+        <button class='submit'> Acessar Quizz </button>
+        <button class='retornar' onclick="retornar()"> Voltar pra home </button>
+    `
+
+    body.appendChild(container)
 }
