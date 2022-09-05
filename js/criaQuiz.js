@@ -388,10 +388,12 @@ function finalizaQuiz(){
         promise.then((res)=>{
             let quizzes = localStorage.getItem("lista-quizzes");
             if(quizzes === undefined || quizzes === null){
-                localStorage.setItem('lista-quizzes',res.data.id);
+                localStorage.setItem('lista-quizzes',[JSON.stringify(res.data.id)]);
             }
             else{
-                quizzes.concat(','+res.data.id);
+                let quiz = JSON.parse(quizzes);
+                quiz.push(res.data.id);
+                quizzes = JSON.stringify(quiz);
                 localStorage.setItem('lista-quizzes',quizzes);
             }
 
