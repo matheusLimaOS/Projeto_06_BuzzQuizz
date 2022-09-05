@@ -87,11 +87,11 @@ function renderizarQuizzesUsuario(resposta) {
         listaQuizzesUsuario.innerHTML += ``;
         listaQuizzesUsuario.innerHTML += `
             <li class="quizz-usuario" data-identifier="quizz-card">
-                <div class="degrade" onclick="quizzSelecionadoUsuario(${idsUsuarioDesserializado})">
+                <div class="degrade" onclick="quizzSelecionado(${idsUsuarioDesserializado})">
                     <img src="${quizzesUsuario.image}" onerror="this. style. display = 'none'">
                 </div>
                 <div class="titulo-quizz">
-                <p onclick="quizzSelecionadoUsuario(${idsUsuarioDesserializado})">${quizzes.title}</p>
+                <p onclick="quizzSelecionado(${idsUsuarioDesserializado})">${quizzes.title}</p>
                 </div>
             </li> 
             `
@@ -176,57 +176,6 @@ function renderizarPaginaQuizz(resposta) {
 
     renderizarQuizz();
 }
-
-/* function quizzSelecionadoUsuario(idLocal) {
-    const paginaInicial = document.querySelector('.pagina-inicial');
-    paginaInicial.innerHTML = ``;
-
-    getQuizz = quizzesUsuarioDesserializado.find((q) => {
-        return q.id === idLocal;
-    });
-
-    console.log(getQuizz);
-    renderizarPaginaQuizzLocal();
-}
-
-function renderizarPaginaQuizzLocal() {
-    quizz = getQuizz;
-    console.log(quizz)
-
-    const main = document.querySelector('main');
-    main.classList.remove('pagina-inicial');
-    main.classList.add('pagina-quizz');
-    const header = document.createElement('header');
-    header.innerHTML = `<img src="./img/BuzzQuizz.png">`
-    main.appendChild(header);
-    const banner = document.createElement('div');
-    banner.classList.add('banner');
-    banner.innerHTML = `
-                        <div class="opacidade"></div>
-                        <img src="${quizz.image}" onerror="this. style. display = 'none'">
-                        <div class="titulo-banner">
-                        <p>${quizz.title}</p>
-                        </div>
-    `
-    main.appendChild(banner);
-    const perguntas = document.createElement('div');
-    perguntas.classList.add('perguntas-pagina-quizz');
-    main.appendChild(perguntas);
-    const resumoQuizz = document.createElement('div');
-    resumoQuizz.classList.add('resumo-pagina-quizz');
-    resumoQuizz.classList.add('hide');
-    resumoQuizz.setAttribute('data-identifier', 'quizz-result')
-    main.appendChild(resumoQuizz);
-    const navegacaoFinalQuizz = document.createElement('div');
-    navegacaoFinalQuizz.classList.add('navegacao-pagina-quizz');
-    navegacaoFinalQuizz.innerHTML = `
-        <button class="reiniciar-quizz" onclick="reiniciaQuizz()">Reiniciar Quizz</button>
-        <div class="voltar-home"><p onclick="voltaHome()">Voltar pra home</p></div>
-    `
-    main.appendChild(navegacaoFinalQuizz);
-
-    renderizarQuizz();
-} */
 
 function renderizarQuizz() {
     let perguntas = document.querySelector('.perguntas-pagina-quizz');
