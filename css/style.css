@@ -8,6 +8,7 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
+    text-overflow: ellipsis;
 }
 
 body {
@@ -39,6 +40,7 @@ header {
     display: flex;
     flex-direction: column;
     align-content: center;
+    justify-content: center;
 }
 
 .titulo-quizzes-usuario {
@@ -63,12 +65,11 @@ header {
 }
 
 .quizzes-usuario {
-    width: 100%;
-    margin: 13px 17px 38px 3px;
-    flex-shrink: 0;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
+    flex-wrap: wrap;
+    margin: 16px 17px 38px 3px;
+    flex-shrink: 0;
 }
 
 .quizz-usuario-vazio {
@@ -128,6 +129,15 @@ header {
     flex-shrink: 0;
 }
 
+.quizz-usuario {
+    width: 340px;
+    height: 181px;
+    margin-bottom: 14px;
+    margin-left: 15px;
+    border-radius: 5px;
+    position: relative;
+}
+
 .quizz {
     width: 340px;
     height: 181px;
@@ -138,19 +148,23 @@ header {
 }
 
 .titulo-quizz {
-    height: 54px;
+    width: 306px;
     position: absolute;
     bottom: 6px;
     left: 17px;
     display: flex;
     align-items: center;
+    z-index: 3;
+    cursor: pointer;
+}
+
+.titulo-quizz p {
+    width: 306px;
     font-size: 19px;
     font-weight: 400;
     color: #ffffff;
     text-align: left;
     line-height: calc(100% + 3px);
-    z-index: 3;
-    cursor: pointer;
 }
 
 .degrade {
@@ -164,6 +178,14 @@ header {
 }
 
 .quizz img {
+    width: 340px;
+    height: 181px;
+    border-radius: 5px;
+    position: relative;
+    z-index: 0;
+}
+
+.quizz-usuario img {
     width: 340px;
     height: 181px;
     border-radius: 5px;
@@ -224,23 +246,22 @@ header {
 }
 
 .pergunta-pagina-quizz {
-    width: 340px;
+    width: 375px;
+    padding: 18px 17px 23px 18px;
     margin-bottom: 69px;
     display: grid;
+    align-items: center;
+    justify-content: center;
     grid-template-columns: auto auto;
     grid-column-gap: 12px;
     grid-row-gap: 12px;
     background-color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
 }
 
 .titulo-pergunta {
     width: 340px;
     height: 89px;
-    font-size: 19px;
-    font-weight: 700;
-    color: #ffffff;
-    text-align: center;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -248,9 +269,17 @@ header {
     grid-column-end: 3;
 }
 
+.titulo-pergunta p {
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
 .resposta {
     width: 163px;
-    height: 140px;
 }
 
 .resposta img {
@@ -264,7 +293,6 @@ header {
 
 .resposta p {
     width: 140px;
-    height: 22px;
     margin-top: 5px;
     font-size: 13px;
     font-weight: 700;
@@ -283,9 +311,15 @@ header {
 }
 
 .resumo-pagina-quizz {
-    width: 340px;
+    width: 375px;
+    padding: 18px 17px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto;
     margin-top: 17px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
 }
 
 .titulo-nivel-final {
@@ -302,6 +336,8 @@ header {
     font-weight: 700;
     color: #ffffff;
     text-align: center;
+    margin-right: 16px;
+    margin-left: 16px;
 }
 
 .info-nivel-final {
@@ -312,6 +348,7 @@ header {
 
 .info-nivel-final img {
     width: 100%;
+    margin-top: 9px;
     margin-bottom: 19px;
 }
 
@@ -418,13 +455,24 @@ header {
         margin-left: 17px;
     }
 
+    .quizzes-usuario {
+        width: 1051px;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 340px 340px 340px;
+        grid-column-gap: 15px;
+        grid-row-gap: 12px;
+        margin-bottom: 48px;
+    }
+
     .quizzes-todos {
         width: 1051px;
         margin: 0;
         display: grid;
-        grid-template-columns: auto auto auto;
+        grid-template-columns: 340px 340px 340px;
         grid-column-gap: 15px;
         grid-row-gap: 12px;
+        margin-bottom: 12px;
     }
 
     .titulo-quizzes-todos {
@@ -434,6 +482,10 @@ header {
     }
 
     .quizz {
+        margin: 0;
+    }
+
+    .quizz-usuario {
         margin: 0;
     }
 
@@ -451,7 +503,8 @@ header {
     }
 
     .pergunta-pagina-quizz {
-        width: 685px;
+        width: 759px;
+        padding: 28px 35px 35px 36px;
         margin-bottom: 105px;
         grid-column-gap: 25px;
         grid-row-gap: 18px;
@@ -465,9 +518,14 @@ header {
         grid-column-end: 3;
     }
 
+    .titulo-pergunta p {
+        font-size: 23px;
+        margin-left: 32px;
+        margin-right: 32px;
+    }
+
     .resposta {
         width: 330px;
-        height: 217px;
     }
 
     .resposta img {
@@ -477,13 +535,13 @@ header {
 
     .resposta p {
         width: 330px;
-        height: 34px;
         margin-top: 8px;
         font-size: 20px;
     }
 
     .resumo-pagina-quizz {
         width: 759px;
+        padding: 18px 17px 22px 18px;
         margin: 0 auto;
         margin-top: 17px;
         display: flex;
@@ -504,6 +562,8 @@ header {
         font-weight: 700;
         color: #ffffff;
         text-align: center;
+        margin-right: 18px;
+        margin-left: 18px;
     }
     
     .info-nivel-final {
@@ -515,6 +575,9 @@ header {
     
     .info-nivel-final img {
         width: 364px;
+        height: 273px;
+        margin-bottom: 0;
+        margin-top: 0;
         margin-right: 21px;
     }
     
@@ -545,6 +608,10 @@ header {
     }
     .voltar-home p {
         font-size: 21px;
+    }
+
+    .hide {
+        display: none;
     }
 
     /* ------------------------------Final página quizz------------------------------ */

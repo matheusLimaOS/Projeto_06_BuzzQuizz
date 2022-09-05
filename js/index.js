@@ -1,15 +1,17 @@
 let quizzes = [];
-let quizzesUsuario = '';
 let quizz = [];
 let urlAPI = 'https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes';
 let respostasCertas = 0;
 let respostasErradas = 0;
 let somaRespostas = 0;
 let quantidadePerguntas = 0;
-
-function getQuizzesUsuario() {
-
-}
+let quizzesUsuarioLocal = "";
+let quizzesUsuarioDesserializado = [];
+let idsUsuarioLocal = "";
+let idsUsuarioDesserializado = [];
+let quizzUsuarioDesserializado = {};
+let getQuizz = [];
+let quizzesFiltrados = [];
 
 function paginaPrincipal(body) {
     body = document.querySelector('body');
@@ -44,16 +46,27 @@ function paginaPrincipal(body) {
     ulTodos.classList.add('quizzes-todos');
     sectionTodos.appendChild(ulTodos);
 
-    renderizarQuizzesUsuario();
+    getQuizzesUsuario();
     getQuizzes();
 }
 
 paginaPrincipal();
 
+/*  */
+
+function getQuizzesUsuario() {
+    quizzesUsuarioLocal = localStorage.getItem("lista-quizzes");
+    quizzesUsuarioDesserializado = JSON.parse(quizzesUsuarioLocal);
+    idsUsuarioLocal = localStorage.getItem("lista-ids");
+    idsUsuarioDesserializado = JSON.parse(idsUsuarioLocal);
+    renderizarQuizzesUsuario();
+}
+
+/*  */
+
 function renderizarQuizzesUsuario() {
-    let quizzesUsuarioSerializados = JSON.stringify(quizzesUsuario);
     let listaQuizzesUsuario = document.querySelector('.quizzes-usuario');
-    if (quizzesUsuario === '') {
+    if (quizzesUsuarioLocal === null) {
         listaQuizzesUsuario.innerHTML = `
             <div class="quizz-usuario-vazio">
                 <h1>Você não criou nenhum quizz ainda :(</h1>
@@ -64,22 +77,20 @@ function renderizarQuizzesUsuario() {
         const tituloUsuario = document.querySelector('.titulo-quizzes-usuario');
         tituloUsuario.classList.remove('hide');
         listaQuizzesUsuario.innerHTML += ``;
-        for (let i = 0; i < quizzesUsuario.length; i++) {
+        for (let i = 0; i < quizzesUsuarioDesserializado.length; i++) {
             listaQuizzesUsuario.innerHTML += `
-            <li class="quizz" data-identifier="quizz-card">
-                <div class="degrade">
-                    <img src="${quizzesUsuarioSerializados[i].image}" onclick="quizzSelecionado()" onerror="this. style. display = 'none'">
+            <li class="quizz-usuario" data-identifier="quizz-card">
+                <div class="degrade" onclick="quizzSelecionadoUsuario(${quizzesUsuarioDesserializado[i].id})">
+                    <img src="${quizzesUsuarioDesserializado[i].image}" onerror="this. style. display = 'none'">
                 </div>
                 <div class="titulo-quizz">
-                <h2 onclick="quizzSelecionado()">${quizzesUsuarioSerializados[i].title}</h2>
+                <p onclick="quizzSelecionadoUsuario(${quizzesUsuarioDesserializado[i].id})">${quizzesUsuarioDesserializado[i].title}</p>
                 </div>
             </li> 
             `
         }
     }
 }
-
-
 
 function getQuizzes() {
     const promise = axios.get(`${urlAPI}`);
@@ -88,22 +99,43 @@ function getQuizzes() {
 
 function renderizarQuizzes(resposta) {
     quizzes = resposta.data;
-
+    console.log(quizzes);
+    console.log(quizzesUsuarioDesserializado);
+    console.log(idsUsuarioDesserializado);
+    if (quizzesUsuarioDesserializado !== null) {
+        quizzesFiltrados = quizzes.filter(item => !quizzesUsuarioDesserializado.some(item2 => item2.id === item.id));
+        console.log(quizzesFiltrados);
+    }
     let listaQuizzes = document.querySelector('.quizzes-todos');
     listaQuizzes.innerHTML = ``;
-
-    for (let i = 0; i < quizzes.length; i++) {
-        listaQuizzes.innerHTML += `
-        <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
-            <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
+    if (quizzesUsuarioDesserializado !== null) {
+        for (let i = 0; i < quizzesFiltrados.length; i++) {
+            listaQuizzes.innerHTML += `
+        <li class="quizz" id="${quizzesFiltrados[i].id}" data-identifier="quizz-card">
+            <div class="degrade" onclick="quizzSelecionadoTodos(${quizzesFiltrados[i].id})">
             </div>
-            <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+            <img src="${quizzesFiltrados[i].image}" onerror="this. style. display = 'none'">
             <div class="titulo-quizz">
-            <h2 onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</h2>
+            <p onclick="quizzSelecionadoTodos(${quizzesFiltrados[i].id})">${quizzesFiltrados[i].title}</p>
             </div>
         </li> 
         `
+        }
+    } else {
+        for (let i = 0; i < quizzes.length; i++) {
+            listaQuizzes.innerHTML += `
+        <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
+            <div class="degrade" onclick="quizzSelecionadoTodos(${quizzes[i].id})">
+            </div>
+            <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+            <div class="titulo-quizz">
+            <p onclick="quizzSelecionadoTodos(${quizzes[i].id})">${quizzes[i].title}</p>
+            </div>
+        </li> 
+        `
+        }
     }
+    /* testeUsuario();  */
 }
 
 function criarQuizz() {
@@ -113,7 +145,7 @@ function criarQuizz() {
     telaInfoBasicaQuiz();
 }
 
-function quizzSelecionado(idSelecionado) {
+function quizzSelecionadoTodos(idSelecionado) {
     const paginaInicial = document.querySelector('.pagina-inicial');
     paginaInicial.innerHTML = ``;
     const promise = axios.get(`${urlAPI}/${idSelecionado}`);
@@ -122,6 +154,7 @@ function quizzSelecionado(idSelecionado) {
 
 function renderizarPaginaQuizz(resposta) {
     quizz = resposta.data;
+    console.log(quizz)
 
     const main = document.querySelector('main');
     main.classList.remove('pagina-inicial');
@@ -144,6 +177,58 @@ function renderizarPaginaQuizz(resposta) {
     main.appendChild(perguntas);
     const resumoQuizz = document.createElement('div');
     resumoQuizz.classList.add('resumo-pagina-quizz');
+    resumoQuizz.classList.add('hide');
+    resumoQuizz.setAttribute('data-identifier', 'quizz-result')
+    main.appendChild(resumoQuizz);
+    const navegacaoFinalQuizz = document.createElement('div');
+    navegacaoFinalQuizz.classList.add('navegacao-pagina-quizz');
+    navegacaoFinalQuizz.innerHTML = `
+        <button class="reiniciar-quizz" onclick="reiniciaQuizz()">Reiniciar Quizz</button>
+        <div class="voltar-home"><p onclick="voltaHome()">Voltar pra home</p></div>
+    `
+    main.appendChild(navegacaoFinalQuizz);
+
+    renderizarQuizz();
+}
+
+function quizzSelecionadoUsuario(idLocal) {
+    const paginaInicial = document.querySelector('.pagina-inicial');
+    paginaInicial.innerHTML = ``;
+
+    getQuizz = quizzesUsuarioDesserializado.find((q) => {
+        return q.id === idLocal;
+    });
+
+    console.log(getQuizz);
+    renderizarPaginaQuizzLocal();
+}
+
+function renderizarPaginaQuizzLocal() {
+    quizz = getQuizz;
+    console.log(quizz)
+
+    const main = document.querySelector('main');
+    main.classList.remove('pagina-inicial');
+    main.classList.add('pagina-quizz');
+    const header = document.createElement('header');
+    header.innerHTML = `<img src="./img/BuzzQuizz.png">`
+    main.appendChild(header);
+    const banner = document.createElement('div');
+    banner.classList.add('banner');
+    banner.innerHTML = `
+                        <div class="opacidade"></div>
+                        <img src="${quizz.image}" onerror="this. style. display = 'none'">
+                        <div class="titulo-banner">
+                        <p>${quizz.title}</p>
+                        </div>
+    `
+    main.appendChild(banner);
+    const perguntas = document.createElement('div');
+    perguntas.classList.add('perguntas-pagina-quizz');
+    main.appendChild(perguntas);
+    const resumoQuizz = document.createElement('div');
+    resumoQuizz.classList.add('resumo-pagina-quizz');
+    resumoQuizz.classList.add('hide');
     resumoQuizz.setAttribute('data-identifier', 'quizz-result')
     main.appendChild(resumoQuizz);
     const navegacaoFinalQuizz = document.createElement('div');
@@ -233,9 +318,17 @@ function verificarResposta(elemento, valor) {
 
 function resultadoQuizz() {
     let resultado = document.querySelector('.resumo-pagina-quizz');
+    resultado.classList.remove('hide');
     resultado.innerHTML = ``;
     let porcentagemFinal = Math.round((respostasCertas / quantidadePerguntas) * 100);
     let niveis = quizz.levels;
+    niveis.sort(function (a, b) {
+        if (a.minValue < b.minValue) {
+            return -1;
+        } else {
+            return true;
+        }
+    });
     const levelMaximo = niveis.filter(lM => lM.minValue <= porcentagemFinal);
     const levelFinal = levelMaximo[levelMaximo.length - 1];
     resultado.innerHTML = `
@@ -248,6 +341,7 @@ function resultadoQuizz() {
 
 function reiniciaQuizz() {
     const resetResultado = document.querySelector('.resumo-pagina-quizz');
+    resetResultado.classList.add('hide');
     resetResultado.innerHTML = ``;
     const resetRespostas = document.querySelectorAll('.resposta');
     for (let i = 0; i < resetRespostas.length; i++) {
@@ -270,3 +364,117 @@ function reiniciaQuizz() {
 function voltaHome() {
     window.location.reload();
 }
+
+/* */
+function testeUsuario() {
+    quizzUsuarioDesserializado = {
+        title: "Teste do quizz",
+        image: "https://http.cat/411.jpg",
+        questions: [
+            {
+                title: "Título da pergunta 1",
+                color: "#123456",
+                answers: [
+                    {
+                        text: "Texto da resposta 1",
+                        image: "https://http.cat/411.jpg",
+                        isCorrectAnswer: true
+                    },
+                    {
+                        text: "Texto da resposta 2",
+                        image: "https://http.cat/412.jpg",
+                        isCorrectAnswer: false
+                    }
+                ]
+            },
+            {
+                title: "Título da pergunta 2",
+                color: "#e27107",
+                answers: [
+                    {
+                        text: "Texto da resposta 1",
+                        image: "https://http.cat/411.jpg",
+                        isCorrectAnswer: true
+                    },
+                    {
+                        text: "Texto da resposta 2",
+                        image: "https://http.cat/412.jpg",
+                        isCorrectAnswer: false
+                    }
+                ]
+            },
+            {
+                title: "Título da pergunta 3",
+                color: "#A0438D",
+                answers: [
+                    {
+                        text: "Texto da resposta 1",
+                        image: "https://http.cat/411.jpg",
+                        isCorrectAnswer: true
+                    },
+                    {
+                        text: "Texto da resposta 2",
+                        image: "https://http.cat/412.jpg",
+                        isCorrectAnswer: false
+                    }
+                ]
+            }
+        ],
+        levels: [
+            {
+                title: "Título do nível 2",
+                image: "https://http.cat/411.jpg",
+                text: "Descrição do nível 2",
+                minValue: 50
+            },
+            {
+                title: "Título do nível 1",
+                image: "https://http.cat/412.jpg",
+                text: "Descrição do nível 1",
+                minValue: 0
+            }
+        ]
+    };
+    postUsuario();
+}
+
+function postUsuario() {
+    const promise = axios.post("https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes", quizzUsuarioDesserializado);
+    promise.then(guardaId);
+}
+
+function guardaId(promise) {
+    if (idsUsuarioDesserializado === null) {
+        idsUsuarioDesserializado = [];
+        idsUsuarioDesserializado.push(promise.data.id);
+        guardaQuizz(promise.data);
+        console.log(promise);
+        console.log(promise.data.id);
+        const idsUsuarioSerializado = JSON.stringify(idsUsuarioDesserializado);
+        localStorage.setItem("lista-ids", idsUsuarioSerializado);
+    } else {
+        idsUsuarioDesserializado.push(promise.data.id);
+        guardaQuizz(promise.data);
+        console.log(promise);
+        console.log(promise.data.id);
+        const idsUsuarioSerializado = JSON.stringify(idsUsuarioDesserializado);
+        localStorage.setItem("lista-ids", idsUsuarioSerializado);
+    }
+}
+
+function guardaQuizz(quizzDoUsuario) {
+    if (quizzesUsuarioDesserializado === null) {
+        quizzesUsuarioDesserializado = [];
+        quizzesUsuarioDesserializado.push(quizzDoUsuario);
+        const quizzUsuarioSerializado = JSON.stringify(quizzesUsuarioDesserializado);
+        localStorage.setItem("lista-quizzes", quizzUsuarioSerializado);
+    } else {
+        quizzesUsuarioDesserializado.push(quizzDoUsuario);
+        const quizzUsuarioSerializado = JSON.stringify(quizzesUsuarioDesserializado);
+        localStorage.setItem("lista-quizzes", quizzUsuarioSerializado);
+    }
+}
+
+
+
+/*  */
