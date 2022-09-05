@@ -59,10 +59,11 @@ function getQuizzesUsuario() {
     idsUsuarioDesserializado = JSON.parse(idsUsuarioLocal);
     console.log(idsUsuarioDesserializado);
     if (idsUsuarioDesserializado !== null) {
-
-        const promise = axios.get(`${urlAPI}/${idsUsuarioDesserializado}`);
-        promise.then(renderizarQuizzesUsuario);
-
+        for (let i = 0; i < idsUsuarioDesserializado.length; i++) {
+            console.log(idsUsuarioDesserializado[i])
+            const promise = axios.get(`${urlAPI}/${idsUsuarioDesserializado[i]}`);
+            promise.then(renderizarQuizzesUsuario);
+        }
     } else {
         renderizarQuizzesUsuario();
     }
