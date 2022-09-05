@@ -1,13 +1,14 @@
 let quiz = {
-    title:"Naruto",
-    image:"https://c4.wallpaperflare.com/wallpaper/935/641/266/lindo-cachorro-wallpaper-preview.jpg",
+    title:"",
+    image:"",
     questions: [],
     levels: []
 }
 let messages = [
     'É necessário que o titulo tenha entre 20 e 65 caracteres',
     'É necessário informar uma URL de imagem válida!',
-    'É necessário que a quantidade de perguntas sejá valida e maior que 3!'
+    'É necessário que a quantidade de perguntas sejá valida e maior que 3!',
+    'É necessário que a quantidade de perguntas sejá valida e maior que 2!'
 ]
 let quantNiveis;
 let quantPerg;
@@ -29,10 +30,12 @@ function telaInfoBasicaQuiz(){
     container.innerHTML += '<h1> Comece pelo começo</h1>';
     container.innerHTML += `
         <form onSubmit='onSubmit();return false'>
-            <input type='text' placeholder = "Título do seu quizz" maxlength='65' minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
-            <input type='url' placeholder = "URL da imagem do seu quizz" oninvalid="mensagemErro(this,'${messages[0]}')" required/>
-            <input type='number' placeholder = "Quantidade de perguntas do quizz" oninvalid="mensagemErro(this,'${messages[2]}')" required/>
-            <input type='number' placeholder = "Quantidade de níveis do quizz" required/>
+            <div class='caixa'>
+                <input type='text' placeholder = "Título do seu quizz" maxlength='65' minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+                <input type='url' placeholder = "URL da imagem do seu quizz" oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+                <input type='number' placeholder = "Quantidade de perguntas do quizz" oninvalid="mensagemErro(this,'${messages[2]}')" required/>
+                <input type='number' placeholder = "Quantidade de níveis do quizz" oninvalid="mensagemErro(this,'${messages[3]}')" required/>
+            </div>
             <button type='submit' class='submit'> Prosseguir pra criar perguntas </button>
         </form>
     `;
@@ -262,7 +265,6 @@ function verificaPerguntaColor(irmão){
 
     for(let i=1;i<color.length;i++){
         if(!hexaDecimal.includes(color[i])){
-            console.log(color[i]);
             mensagemErro(irmão,"É necessário que a cor esteja num formato hexadecimal válido (#FFFFFF)");
             return;
         }
@@ -375,6 +377,8 @@ function criaNiveis(){
     eventoErro();
 }
 function finalizaQuiz(){
+    let button = document.querySelector('.submit');
+    button.setAttribute('disabled','');
     let niveis = verificaNiveis()
     if(niveis!==false){
         quiz.levels=niveis;
@@ -383,7 +387,7 @@ function finalizaQuiz(){
 
         promise.then((res)=>{
             let quizzes = localStorage.getItem("lista-quizzes");
-            if(quizzes === undefined){
+            if(quizzes === undefined || quizzes === null){
                 localStorage.setItem('lista-quizzes',res.data.id);
             }
             else{
@@ -391,12 +395,15 @@ function finalizaQuiz(){
                 localStorage.setItem('lista-quizzes',quizzes);
             }
 
-            visualizarQuizFeito();
+            visualizarQuizFeito()
         })
     }
     else{
 
     }
+    setTimeout(()=>{
+        button.removeAttribute('disabled')
+    },3000)
     
 }
 function verificaNiveis(){
@@ -404,6 +411,7 @@ function verificaNiveis(){
     let levels = [];
 
     let isTudoOK = true;
+    let is0 = false;
     let button = document.querySelector('.submit');
     button.setAttribute('disabled','');
 
@@ -438,6 +446,9 @@ function verificaNiveis(){
             mensagemErro(divPergunta.children[1].children[1],'Deve ser um valor entre 0 e 100');
         }
         else{
+            if(divPergunta.children[1].children[1].value === 0){
+                is0 = true;
+            }
             level.minValue = divPergunta.children[1].children[1].value;
         }
 
@@ -446,7 +457,7 @@ function verificaNiveis(){
             mensagemErro(divPergunta.children[1].children[0],'Precisa ter no minimo 10 caracteres');
         }
         else{
-            level.title = divPergunta.children[1].children[2].value;
+            level.title = divPergunta.children[1].children[0].value;
         }
 
         levels.push(level);
@@ -455,7 +466,10 @@ function verificaNiveis(){
     setTimeout(()=>{
         button.removeAttribute('disabled')
     },3000)
-    if(isTudoOK===true){
+    if(!is0){
+        alert("é necessário que um campo % de acerto mínima tenha valor 0");
+    }
+    if(isTudoOK===true && is0){
         return levels;
     }
     else{
