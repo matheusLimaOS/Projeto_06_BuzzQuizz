@@ -3,30 +3,41 @@ let quiz = {
     image:"",
     questions: [{}]
 }
+
+let messages = [
+    'É necessário que o titulo tenha entre 20 e 65 caracteres',
+    'É necessário informar uma URL de imagem válida!',
+    'É necessário que a quantidade de perguntas sejá valida e maior que 3!'
+]
+let quantNiveis = 0;
 let quantPerg = 0;
 
 function limparBody(){
     let body = document.querySelector('body');
-
     body.innerHTML = "";
 }
 
 function telaInfoBasicaQuiz(){
     let body = document.querySelector('body');
     let container = document.createElement('div');
+
+    eventoErro();
+
     limparBody();
     criaHeader(body);
-    container.classList.add('containerCriaQuiz')
+
+    container.classList.add('containerCriaQuiz');
     container.innerHTML += '<h1> Comece pelo começo</h1>';
     container.innerHTML += `
-        <form>
-            <input placeholder = "Título do seu quizz"/>
-            <input placeholder = "URL da imagem do seu quizz"/>
-            <input placeholder = "Quantidade de perguntas do quizz"/>
-            <input placeholder = "Quantidade de níveis do quizz"/>
+        <form onSubmit='onSubmit();return false'>
+            <input type='text' placeholder = "Título do seu quizz" maxlength='65' minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+            <input type='url' placeholder = "URL da imagem do seu quizz" oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+            <input type='number' placeholder = "Quantidade de perguntas do quizz" oninvalid="mensagemErro(this,'${messages[2]}')" required/>
+            <input type='number' placeholder = "Quantidade de níveis do quizz" required/>
+            <button type='submit' class='submit'> Prosseguir pra criar perguntas </button>
         </form>
-        <button class='submit' onClick="onSubmit()"> Prosseguir pra criar perguntas </button>
     `;
+
     body.appendChild(container);
 }
 
@@ -37,55 +48,37 @@ function mensagemErro(irmão,texto){
     divMsg.classList.add('erro');
 
     irmão.after(divMsg);
-    setTimeout(()=>{
-        let erro = document.querySelector('.containerCriaQuiz .erro');
-        if(erro!== undefined && erro !== null){
-            erro.remove();
+}
+
+function limpaErro(){
+    let erros = document.querySelectorAll('.erro');
+
+    if(erros !== undefined){
+        for(let i=0;i<erros.length;i++){
+            erros[i].remove();
         }
-    },3000)
+    }
+}
+
+function valida(irmão,num){
+    mensagemErro(irmão,messages[num]);
+}
+
+function eventoErro(){
+    let input = document.querySelectorAll('input');
+
+    for(let i=0; i<input.length;i++){
+        input.setCustomValidity('');
+    }
+
+    document.querySelector("body").addEventListener("click", limpaErro);
 }
 
 function onSubmit() {
-    let button = document.querySelector(".containerCriaQuiz button");
-    let titulo = document.querySelector(".containerCriaQuiz form input:nth-child(1)");
-    let URLQuizz = document.querySelector(".containerCriaQuiz form input:nth-child(2)");
     quantPerg = document.querySelector(".containerCriaQuiz form input:nth-child(3)");
-    let quantNiveis = document.querySelector(".containerCriaQuiz form input:nth-child(4)");
-    let checaURL = (URLQuizz.value.includes("https://") || URLQuizz.value.includes("http://")) && URLQuizz.value.includes(".");
-    let erro = false;
+    quantNiveis = document.querySelector(".containerCriaQuiz form input:nth-child(4)");
 
-
-    if(titulo.value.length===0 || titulo.value.length<20 || titulo.value.length>65){
-        erro=true;
-        mensagemErro(titulo,'É necessário que o titulo tenha entre 20 e 65 caracteres');
-    }
-    if(URLQuizz.value.length===0 && checaURL){
-        erro = true;
-        mensagemErro(URLQuizz,'É necessário informar uma URL de imagem válida!');
-    }
-
-    if(quantPerg.value.length===0 || isNaN(quantPerg.value) || quantPerg.value < 3){
-        erro=true;
-        quantPerg.value = "";
-        mensagemErro(quantPerg,'É necessário que a quantidade de perguntas sejá valida e maior que 3!');
-    }
-
-    if(quantNiveis.value.length===0 || isNaN(quantNiveis.value)){
-        erro=true;
-        quantNiveis.value = "";
-        mensagemErro(quantNiveis,'É necessário informar uma quantidade válida de niveis!');
-    }
-
-    if(erro){
-        button.setAttribute('disabled','true');
-        setTimeout(() => {
-            button.removeAttribute('disabled');
-        }, 3000);
-    }
-    else{
-        
-        criaPerguntas(quantNiveis.value);
-    }
+    criaPerguntas();
 }
 
 function criaHeader(body){
@@ -95,7 +88,7 @@ function criaHeader(body){
     body.appendChild(header);
 }
 
-function criaPerguntas(quantNiveis){
+function criaPerguntas(){
     limparBody();
 
     let body = document.querySelector('body');
@@ -114,25 +107,25 @@ function criaPerguntas(quantNiveis){
                 </button>
             </div>
             <form class="formulario" data-identifier="question-form">
-                <input placeholder = "Texto da pergunta"/>
+                <input type='text' placeholder = "Texto da pergunta" minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
                 <input placeholder = "Cor de fundo da pergunta"/>
                 <div class='respostaCorreta'>
                     <div class="titulo">
                         <p>Resposta Correta</p>
                     </div>
-                    <input placeholder = "Resposta correta"/>
-                    <input placeholder = "URL da imagem"/>
+                    <input type='text' placeholder = "Resposta correta" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                    <input type='url' placeholder = "URL da imagem" oninvalid="mensagemErro(this,'${messages[0]}')"/>
                 </div>
                 <div class='respostaErrada'>
                     <div class="titulo">
                         <p>Resposta incorretas</p>
                     </div>
-                    <input placeholder = "Resposta incorreta 1"/>
-                    <input placeholder = "URL da imagem 1"/>
-                    <input placeholder = "Resposta incorreta 2"/>
-                    <input placeholder = "URL da imagem 2"/>
-                    <input placeholder = "Resposta incorreta 3"/>   
-                    <input placeholder = "URL da imagem 3"/>  
+                    <input type='text' placeholder = "Resposta incorreta 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                    <input type='url' placeholder = "URL da imagem 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                    <input type='text' placeholder = "Resposta incorreta 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                    <input type='url' placeholder = "URL da imagem 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                    <input type='text' placeholder = "Resposta incorreta 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>   
+                    <input type='url' placeholder = "URL da imagem 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>  
                 </div>
             </form>
         </div>
@@ -147,25 +140,25 @@ function criaPerguntas(quantNiveis){
                     </button> 
                 </div>
                 <form class="displayNone" data-identifier="question-form">
-                    <input placeholder = "Texto da pergunta"/>
+                    <input type='text' placeholder = "Texto da pergunta" maxlength='65' minlength='20' oninvalid="mensagemErro(this,'${messages[0]}')" required/>
                     <input placeholder = "Cor de fundo da pergunta"/>
                     <div class='respostaCorreta'>
                         <div class="titulo">
                             <p>Resposta Correta</p>
                         </div>
-                        <input placeholder = "Resposta correta"/>
-                        <input placeholder = "URL da imagem"/>
+                        <input type='text' placeholder = "Resposta correta" oninvalid="mensagemErro(this,'${messages[0]}')" required/>
+                        <input type='url' placeholder = "URL da imagem" oninvalid="mensagemErro(this,'${messages[0]}')"/>
                     </div>
                     <div class='respostaErrada'>
                         <div class="titulo">
                             <p>Resposta incorretas</p>
                         </div>
-                        <input placeholder = "Resposta incorreta 1"/>
-                        <input placeholder = "URL da imagem 1"/>
-                        <input placeholder = "Resposta incorreta 2"/>
-                        <input placeholder = "URL da imagem 2"/>
-                        <input placeholder = "Resposta incorreta 3"/>   
-                        <input placeholder = "URL da imagem 3"/>  
+                        <input type='text' placeholder = "Resposta incorreta 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                        <input type='url' placeholder = "URL da imagem 1" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                        <input type='text' placeholder = "Resposta incorreta 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                        <input type='url' placeholder = "URL da imagem 2" oninvalid="mensagemErro(this,'${messages[0]}')"/>
+                        <input type='text' placeholder = "Resposta incorreta 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>   
+                        <input type='url' placeholder = "URL da imagem 3" oninvalid="mensagemErro(this,'${messages[0]}')"/>  
                     </div>
                 </form>
             </div>
@@ -188,7 +181,7 @@ function expandir(numPergunta){
     form.classList.remove('displayNone');
 }
 
-function esconder(pergunta){
+function esconder(){
     let icons = document.querySelectorAll('.ion-icon');
     let forms = document.querySelectorAll('form');
     let i=0;
@@ -200,7 +193,6 @@ function esconder(pergunta){
 }
 
 function verificaPerguntas(){
-    let perguntas = [];
     let pergunta = {
         title: "",
         color: "",
@@ -251,7 +243,6 @@ function verificaPerguntas(){
         button.removeAttribute('disabled')
     },3000)
 }
-
 function verificaPerguntaTitle(irmão){
     if(irmão.value === 0 || irmão.value.length<20){
         mensagemErro(irmão,"É necessário que a pergunta tenha no minimo 20 caracteres");
@@ -276,14 +267,13 @@ function verificaPerguntaColor(irmão){
     }
 
 }
-
 function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
     let resposta;
     let respostas = [];
     let existeRespostaCerta = false;
     let existeRespostaErrada = false;
 
-    if(divRespostaCorreta.children[1].value.length > 0 && checaURL(divRespostaCorreta.children[2].value)){
+    if(divRespostaCorreta.children[1].value.length > 0){
         resposta = {
             text: divRespostaCorreta.children[1].value,
             image: divRespostaCorreta.children[2].value,
@@ -293,7 +283,7 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
         existeRespostaCerta = true;
     }
 
-    if(divRespostaErradas.children[5].value.length > 0 && checaURL(divRespostaErradas.children[6].value)){
+    if(divRespostaErradas.children[5].value.length > 0){
         resposta = {
             text: divRespostaErradas.children[5].value,
             image: divRespostaErradas.children[6].value,
@@ -303,7 +293,7 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
         existeRespostaErrada = true;
     }
 
-    if(divRespostaErradas.children[3].value.length > 0 && checaURL(divRespostaErradas.children[4].value)){
+    if(divRespostaErradas.children[3].value.length > 0){
         resposta = {
             text: divRespostaErradas.children[3].value,
             image: divRespostaErradas.children[4].value,
@@ -313,7 +303,7 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
         existeRespostaErrada = true;
     }
 
-    if(divRespostaErradas.children[1].value.length > 0 && checaURL(divRespostaErradas.children[2].value)){
+    if(divRespostaErradas.children[1].value.length > 0){
         resposta = {
             text: divRespostaErradas.children[1].value,
             image: divRespostaErradas.children[2].value,
@@ -332,7 +322,8 @@ function verificaRespostas(divPergunta,divRespostaCorreta,divRespostaErradas){
     }
 
 }
+function telaNiveis(){
+    limparBody();
 
-function checaURL(URL){
-    return (URL.includes("https://") || URL.includes("http://")) && URL.includes(".");
+    
 }

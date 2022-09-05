@@ -80,7 +80,7 @@
 .erro{
     font-weight: 400;
     font-size: 16px;
-    margin-left: 5%;
+    padding-left: 25px;
     width: 100%;
     border-radius: 10px;
     display: flex;
