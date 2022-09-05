@@ -1,4 +1,5 @@
 let quizzes = [];
+let quizzesUsuario = [];
 let quizz = [];
 let urlAPI = 'https://mock-api.driven.com.br/api/v4/buzzquizz/quizzes';
 let respostasCertas = 0;
@@ -58,17 +59,18 @@ function getQuizzesUsuario() {
     idsUsuarioDesserializado = JSON.parse(idsUsuarioLocal);
     console.log(idsUsuarioDesserializado);
     if (idsUsuarioDesserializado !== null) {
-        for (let i = 0; i < idsUsuarioDesserializado.length; i++) {
-            const promise = axios.get(`${urlAPI}/${idsUsuarioDesserializado[i]}`);
-            promise.then(renderizarQuizzes);
-        }
+
+        const promise = axios.get(`${urlAPI}/${idsUsuarioDesserializado}`);
+        promise.then(renderizarQuizzesUsuario);
+
+    } else {
+        renderizarQuizzesUsuario();
     }
-    renderizarQuizzesUsuario();
 }
 
 /*  */
 
-function renderizarQuizzesUsuario() {
+function renderizarQuizzesUsuario(resposta) {
     let listaQuizzesUsuario = document.querySelector('.quizzes-usuario');
     if (idsUsuarioLocal === null) {
         listaQuizzesUsuario.innerHTML = `
@@ -78,68 +80,48 @@ function renderizarQuizzesUsuario() {
             </div>
             `
     } else {
+        console.log(resposta);
+        quizzesUsuario = resposta.data;
         const tituloUsuario = document.querySelector('.titulo-quizzes-usuario');
         tituloUsuario.classList.remove('hide');
         listaQuizzesUsuario.innerHTML += ``;
-        for (let i = 0; i < quizzes.length; i++) {
-            listaQuizzesUsuario.innerHTML += `
+        listaQuizzesUsuario.innerHTML += `
             <li class="quizz-usuario" data-identifier="quizz-card">
-                <div class="degrade" onclick="quizzSelecionadoUsuario(${quizzes[i].id})">
-                    <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+                <div class="degrade" onclick="quizzSelecionadoUsuario(${idsUsuarioDesserializado})">
+                    <img src="${quizzesUsuario.image}" onerror="this. style. display = 'none'">
                 </div>
                 <div class="titulo-quizz">
-                <p onclick="quizzSelecionadoUsuario(${quizzes[i].id})">${quizzes[i].title}</p>
+                <p onclick="quizzSelecionadoUsuario(${idsUsuarioDesserializado})">${quizzes.title}</p>
                 </div>
             </li> 
             `
-        }
+
     }
 }
 
 function getQuizzes() {
     const promise = axios.get(`${urlAPI}`);
     promise.then(renderizarQuizzes);
+    console.log("funciona");
 }
 
 function renderizarQuizzes(resposta) {
     quizzes = resposta.data;
-    console.log(quizzes);
-    console.log(quizzes);
-    console.log(idsUsuarioDesserializado);
-    if (quizzes !== null) {
-        quizzesFiltrados = quizzes.filter(item => !quizzes.some(item2 => item2.id === item.id));
-        console.log(quizzesFiltrados);
-    }
     let listaQuizzes = document.querySelector('.quizzes-todos');
     listaQuizzes.innerHTML = ``;
-    if (quizzes !== null) {
-        for (let i = 0; i < quizzesFiltrados.length; i++) {
-            listaQuizzes.innerHTML += `
-        <li class="quizz" id="${quizzesFiltrados[i].id}" data-identifier="quizz-card">
-            <div class="degrade" onclick="quizzSelecionado(${quizzesFiltrados[i].id})">
-            </div>
-            <img src="${quizzesFiltrados[i].image}" onerror="this. style. display = 'none'">
-            <div class="titulo-quizz">
-            <p onclick="quizzSelecionado(${quizzesFiltrados[i].id})">${quizzesFiltrados[i].title}</p>
-            </div>
-        </li> 
-        `
-        }
-    } else {
-        for (let i = 0; i < quizzes.length; i++) {
-            listaQuizzes.innerHTML += `
+
+    for (let i = 0; i < quizzes.length; i++) {
+        listaQuizzes.innerHTML += `
         <li class="quizz" id="${quizzes[i].id}" data-identifier="quizz-card">
-            <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
-            </div>
-            <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
-            <div class="titulo-quizz">
-            <p onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</p>
-            </div>
-        </li> 
-        `
-        }
+        <div class="degrade" onclick="quizzSelecionado(${quizzes[i].id})">
+        </div>
+        <img src="${quizzes[i].image}" onerror="this. style. display = 'none'">
+        <div class="titulo-quizz">
+        <p onclick="quizzSelecionado(${quizzes[i].id})">${quizzes[i].title}</p>
+        </div>
+    </li> 
+    `
     }
-    /* testeUsuario();  */
 }
 
 function criarQuizz() {
